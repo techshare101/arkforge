@@ -274,12 +274,20 @@ export interface PilotSlotTracker {
 export interface ExceptionDeskIncident {
   id: string;
   workflowChain: string;
-  failedStep: string;
+  failedStep: 'ERP Sync' | 'Work Order Spec' | 'Field Proof / Photos' | 'Accounting / AP' | 'Approval Gateway';
+  severity: 'CRITICAL_HALT' | 'WARNING_MISMATCH' | 'DOCUMENT_DEFICIENCY' | 'AUTO_REMEDIATED';
+  erpSystem: 'ServiceTitan' | 'NetSuite AP' | 'Procore' | 'Yardi Voyager' | 'ServiceChannel';
+  workOrderNumber: string;
+  contractorName: string;
+  financialImpact: number;
   detectedProblem: string;
   agentInvestigation: string;
+  investigationSteps: string[];
   preparedResolution: string;
+  remediationArtifact?: string;
   status: 'INVESTIGATED' | 'AWAITING_HUMAN_CONFIRMATION' | 'AUTO_RESOLVED';
   timeAgo: string;
+  committedAt?: string;
 }
 
 // -------------------------------------------------------------

@@ -7,6 +7,7 @@ import AgentReadyAudit from './components/AgentReadyAudit';
 import DoneproofDiamond from './components/DoneproofDiamond';
 import CloseoutWorkspace from './components/CloseoutWorkspace';
 import ConnectorHub from './components/ConnectorHub';
+import ExceptionDesk from './components/ExceptionDesk';
 import { 
   ArrowRight, 
   Bot, 
@@ -24,11 +25,12 @@ import {
   Terminal, 
   TrendingUp, 
   Workflow, 
+  Wrench,
   Zap 
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'closeout' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'closeout' | 'exceptions' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready'>('overview');
   const [demoRoleTab, setDemoRoleTab] = useState('Engineering');
 
   const demoRoles = [
@@ -70,6 +72,18 @@ export const App: React.FC = () => {
             >
               <FileCheck className="w-3.5 h-3.5 text-cyan-500" />
               Phase 1: Closeout Desk
+            </button>
+
+            <button
+              onClick={() => setActiveTab('exceptions')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeTab === 'exceptions'
+                  ? 'bg-purple-700 text-white shadow ring-2 ring-purple-300'
+                  : 'text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5 text-purple-600" />
+              Phase 2: Exception Desk
             </button>
 
             <button
@@ -142,6 +156,9 @@ export const App: React.FC = () => {
 
         {/* View: Phase 1 Closeout Workspace */}
         {activeTab === 'closeout' && <CloseoutWorkspace />}
+
+        {/* View: Phase 2 Exception Resolution Desk */}
+        {activeTab === 'exceptions' && <ExceptionDesk />}
 
         {/* View: Outcome Verification (Doneproof) */}
         {activeTab === 'diamond' && <DoneproofDiamond />}

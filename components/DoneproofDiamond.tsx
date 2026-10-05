@@ -226,9 +226,19 @@ const INITIAL_EXCEPTIONS: ExceptionDeskIncident[] = [
   {
     id: 'exc-1',
     workflowChain: 'ERP → Work Order → Documents → Accounting → Approval',
-    failedStep: 'Accounting Ingestion (PO # Mismatch)',
+    failedStep: 'Accounting / AP',
+    severity: 'WARNING_MISMATCH',
+    erpSystem: 'NetSuite AP',
+    workOrderNumber: 'WO-8942-MN',
+    contractorName: 'Apex Commercial Mechanical',
+    financialImpact: 120.00,
     detectedProblem: 'Contractor invoice references PO-98124, but ERP issued PO-98124-B with line item change for disposal fee ($120).',
     agentInvestigation: 'Agent cross-referenced technician notes and supplier receipt. The disposal fee was authorized by assistant property manager via email at 11:15 AM.',
+    investigationSteps: [
+      'Scanned AP inbox for email authorizations matching PO-98124',
+      'Extracted approval timestamp (11:15 AM) from assistant property manager',
+      'Queried NetSuite line items and prepared revised delta allocation'
+    ],
     preparedResolution: 'Auto-appended email authorization PDF to billing packet and updated ERP invoice line item to match revised PO-98124-B.',
     status: 'INVESTIGATED',
     timeAgo: '12m ago'
@@ -236,9 +246,20 @@ const INITIAL_EXCEPTIONS: ExceptionDeskIncident[] = [
   {
     id: 'exc-2',
     workflowChain: 'ERP → Work Order → Documents → Accounting → Approval',
-    failedStep: 'Document Extraction (Unreadable Serial Tag)',
+    failedStep: 'Field Proof / Photos',
+    severity: 'DOCUMENT_DEFICIENCY',
+    erpSystem: 'ServiceTitan',
+    workOrderNumber: 'WO-1928-SPRINKLER',
+    contractorName: 'North Star Plumbing & Fire',
+    financialImpact: 2340.00,
     detectedProblem: 'Technician uploaded blurry camera photo of compressor serial barcode in dim basement lighting.',
     agentInvestigation: 'Agent queried supplier wholesale purchase manifest from Johnstone Supply. Serial number matching invoice is COPELAND-ZR61K3-TF5-930.',
+    investigationSteps: [
+      'Performed OCR contrast enhancement on blurred photo',
+      'Extracted partial string ZR61K3-TF5',
+      'Queried Johnstone Supply EDI manifest matching contractor invoice timestamp',
+      'Verified authentic OEM match and generated attestation certificate'
+    ],
     preparedResolution: 'Matched supplier delivery manifest and tagged asset database with verified serial string for human sign-off.',
     status: 'AWAITING_HUMAN_CONFIRMATION',
     timeAgo: '34m ago'

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Cpu, Terminal, Layers, FileCheck, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Cpu, Terminal, Layers, FileCheck, CheckCircle2, Wrench } from 'lucide-react';
 
 interface NavbarProps {
-  currentTab: 'overview' | 'closeout' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready';
-  onSelectTab: (tab: 'overview' | 'closeout' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready') => void;
+  currentTab: 'overview' | 'closeout' | 'exceptions' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready';
+  onSelectTab: (tab: 'overview' | 'closeout' | 'exceptions' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
@@ -71,7 +71,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <FileCheck className="w-3.5 h-3.5 text-cyan-500" />
-                Phase 1: Closeout Desk
+                Phase 1: Closeout
+              </button>
+
+              <button
+                onClick={() => onSelectTab('exceptions')}
+                className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
+                  currentTab === 'exceptions'
+                    ? 'bg-purple-700 text-white shadow-sm ring-2 ring-purple-300'
+                    : 'text-purple-900 hover:text-purple-950 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+                }`}
+              >
+                <Wrench className="w-3.5 h-3.5 text-purple-600" />
+                Phase 2: Exceptions
               </button>
 
               <button
