@@ -208,3 +208,34 @@ export interface WorkOrderProofRecord {
   
   shareableCertificateUrl: string;
 }
+
+// -------------------------------------------------------------
+// 5. ASTRA OPPORTUNITY RADAR: DIAMOND, GOLD, SILVER
+// -------------------------------------------------------------
+export interface CloseoutPacket {
+  id: string;
+  contractorName: string;
+  clientName: string;
+  poNumber: string;
+  workOrderNumber: string;
+  clientRequirements: string[];
+  techNotes: string;
+  photosUploadedCount: number;
+  customerSignoffObtained: boolean;
+  missingEvidence: string[];
+  billingReadinessStatus: 'BILLING_READY' | 'MISSING_EVIDENCE' | 'EXCEPTION_ROUTED';
+  invoiceAmount: number;
+  assembledAt: string;
+}
+
+export interface ExceptionDeskIncident {
+  id: string;
+  workflowChain: string;
+  failedStep: string;
+  detectedProblem: string;
+  agentInvestigation: string;
+  preparedResolution: string;
+  status: 'INVESTIGATED' | 'AWAITING_HUMAN_CONFIRMATION' | 'AUTO_RESOLVED';
+  timeAgo: string;
+}
+

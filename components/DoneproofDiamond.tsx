@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { 
+  AlertCircle,
   AlertTriangle, 
   ArrowRight, 
   BadgeCheck, 
@@ -7,24 +8,30 @@ import {
   Check, 
   CheckCircle2, 
   Clock, 
+  Coins, 
   Copy, 
+  Cpu, 
   DollarSign, 
   Download, 
   ExternalLink, 
   FileCheck, 
+  FileSearch, 
   FileText, 
   Fingerprint, 
   Gem, 
+  Layers, 
   MapPin, 
   QrCode, 
   RefreshCw, 
   ShieldAlert, 
   ShieldCheck, 
   Sparkles, 
+  TrendingUp, 
   UserCheck, 
-  Wrench 
+  Wrench, 
+  XCircle 
 } from 'lucide-react';
-import { WorkOrderProofRecord } from '../types';
+import { WorkOrderProofRecord, CloseoutPacket, ExceptionDeskIncident } from '../types';
 import { geminiService } from '../services/geminiService';
 
 const SAMPLE_WORK_ORDERS: WorkOrderProofRecord[] = [
@@ -164,13 +171,95 @@ const SAMPLE_WORK_ORDERS: WorkOrderProofRecord[] = [
   }
 ];
 
+const INITIAL_CLOSEOUT_PACKETS: CloseoutPacket[] = [
+  {
+    id: 'pkt-1',
+    contractorName: 'Apex Commercial Mechanical',
+    clientName: 'Midwest Logistics Center (Target Depot Eagan)',
+    poNumber: 'PO-2026-98124',
+    workOrderNumber: 'WO-44810-RTU',
+    clientRequirements: [
+      'Customer Purchase Order PO-2026-98124 on face of invoice',
+      'Before & after photos of 25-ton RTU compressor replacement',
+      'Old compressor serial nameplate legible photo',
+      'Refrigerant recovery log (EPA 608 certified tag)',
+      'Signed facilities manager sign-off slip'
+    ],
+    techNotes: 'Replaced failed Copeland Scroll compressor on RTU #4. Recovered 18 lbs R-410A. Pulled vacuum to 380 microns. Recharged to factory spec (21.5 lbs). Running test passed with 12°F superheat.',
+    photosUploadedCount: 4,
+    customerSignoffObtained: true,
+    missingEvidence: [],
+    billingReadinessStatus: 'BILLING_READY',
+    invoiceAmount: 4850.00,
+    assembledAt: '10:14 AM Today'
+  },
+  {
+    id: 'pkt-2',
+    contractorName: 'North Star Plumbing & Fire',
+    clientName: 'Cushman & Wakefield Twin Cities Properties',
+    poNumber: 'PO-PENDING-MATCH',
+    workOrderNumber: 'WO-1928-SPRINKLER',
+    clientRequirements: [
+      'Pre-approved emergency PO authorization code',
+      'Photo of replaced 4" backflow preventer valve assembly',
+      'Hydrostatic pressure test certificate signed by licensed master plumber',
+      'City of Minneapolis fire marshal inspection tag'
+    ],
+    techNotes: 'Repaired burst riser coupling on 2nd-floor parking ramp sprinkler system. Replaced check valve.',
+    photosUploadedCount: 2,
+    customerSignoffObtained: false,
+    missingEvidence: [
+      'Missing City Fire Marshal re-inspection tag photo',
+      'Customer PO Number is missing or unverified in Cushman portal'
+    ],
+    billingReadinessStatus: 'MISSING_EVIDENCE',
+    invoiceAmount: 2340.00,
+    assembledAt: '09:42 AM Today'
+  }
+];
+
+const INITIAL_EXCEPTIONS: ExceptionDeskIncident[] = [
+  {
+    id: 'exc-1',
+    workflowChain: 'ERP → Work Order → Documents → Accounting → Approval',
+    failedStep: 'Accounting Ingestion (PO # Mismatch)',
+    detectedProblem: 'Contractor invoice references PO-98124, but ERP issued PO-98124-B with line item change for disposal fee ($120).',
+    agentInvestigation: 'Agent cross-referenced technician notes and supplier receipt. The disposal fee was authorized by assistant property manager via email at 11:15 AM.',
+    preparedResolution: 'Auto-appended email authorization PDF to billing packet and updated ERP invoice line item to match revised PO-98124-B.',
+    status: 'INVESTIGATED',
+    timeAgo: '12m ago'
+  },
+  {
+    id: 'exc-2',
+    workflowChain: 'ERP → Work Order → Documents → Accounting → Approval',
+    failedStep: 'Document Extraction (Unreadable Serial Tag)',
+    detectedProblem: 'Technician uploaded blurry camera photo of compressor serial barcode in dim basement lighting.',
+    agentInvestigation: 'Agent queried supplier wholesale purchase manifest from Johnstone Supply. Serial number matching invoice is COPELAND-ZR61K3-TF5-930.',
+    preparedResolution: 'Matched supplier delivery manifest and tagged asset database with verified serial string for human sign-off.',
+    status: 'AWAITING_HUMAN_CONFIRMATION',
+    timeAgo: '34m ago'
+  }
+];
+
 export const DoneproofDiamond: React.FC = () => {
+  const [radarPillar, setRadarPillar] = useState<'diamond' | 'gold' | 'silver'>('diamond');
+  
+  // Diamond state
   const [selectedWO, setSelectedWO] = useState<WorkOrderProofRecord>(SAMPLE_WORK_ORDERS[0]);
   const [activeChainStep, setActiveChainStep] = useState<'trigger' | 'work' | 'evidence' | 'verification' | 'settlement'>('evidence');
   const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationDone, setVerificationDone] = useState(false);
   const [settled, setSettled] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Gold state
+  const [closeoutPackets, setCloseoutPackets] = useState<CloseoutPacket[]>(INITIAL_CLOSEOUT_PACKETS);
+  const [selectedPacket, setSelectedPacket] = useState<CloseoutPacket>(INITIAL_CLOSEOUT_PACKETS[0]);
+  const [isAssembling, setIsAssembling] = useState(false);
+  const [packetGenerated, setPacketGenerated] = useState(false);
+
+  // Silver state
+  const [exceptions, setExceptions] = useState<ExceptionDeskIncident[]>(INITIAL_EXCEPTIONS);
+  const [resolvedIds, setResolvedIds] = useState<string[]>([]);
 
   const handleRunVerification = async () => {
     setIsVerifying(true);
@@ -188,7 +277,6 @@ export const DoneproofDiamond: React.FC = () => {
           }
         }
       }));
-      setVerificationDone(true);
       setActiveChainStep('verification');
     } finally {
       setIsVerifying(false);
@@ -213,6 +301,18 @@ export const DoneproofDiamond: React.FC = () => {
     setActiveChainStep('settlement');
   };
 
+  const handleAssembleCloseout = () => {
+    setIsAssembling(true);
+    setTimeout(() => {
+      setIsAssembling(false);
+      setPacketGenerated(true);
+    }, 1000);
+  };
+
+  const handleResolveException = (id: string) => {
+    setResolvedIds(prev => [...prev, id]);
+  };
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(selectedWO.shareableCertificateUrl);
     setCopiedLink(true);
@@ -221,381 +321,494 @@ export const DoneproofDiamond: React.FC = () => {
 
   return (
     <div className="space-y-12">
-      {/* The Diamond Banner */}
+      {/* Top Astra Opportunity Radar Header */}
       <div className="bg-[#1a1a1a] rounded-[32px] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl border border-gray-800">
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400 rounded-full blur-[140px] opacity-20 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-[#343CED] rounded-full blur-[130px] opacity-25 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-amber-400 rounded-full blur-[130px] opacity-15 pointer-events-none"></div>
 
         <div className="relative z-10 max-w-4xl space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/20 text-xs font-bold uppercase tracking-wider text-cyan-300 border border-cyan-500/30">
-            <Gem className="w-3.5 h-3.5" />
-            The Diamond · Proof That an Agent or Field Worker Finished the Job
+            <Sparkles className="w-3.5 h-3.5" />
+            Astra Opportunity Radar · The 3 Enduring Winners
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
-            Doneproof <span className="text-cyan-300">Verification Engine</span>
+            Job Acceptance <span className="text-cyan-300">& Closeout Engine</span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-300 font-medium leading-relaxed">
-            "The hidden opportunity is that businesses will need proof between{' '}
-            <span className="text-white font-semibold">‘the agent says it did it’</span> and{' '}
-            <span className="text-cyan-300 font-semibold">‘the customer accepts the result.’</span>"
-            Turn physical work orders into timestamped, before-and-after cryptographic evidence and verified settlement.
+            The strategic roadmap: <span className="text-amber-300 font-bold">Gold (Closeout Service)</span> generates immediate revenue + data + customer knowledge, which feeds directly into{' '}
+            <span className="text-cyan-300 font-bold">Diamond (Job Acceptance Engine)</span>.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10 text-sm">
-            <div>
-              <div className="text-gray-400 text-xs">Initial Wedge</div>
-              <div className="font-bold text-white text-base">Property Maintenance</div>
-            </div>
-            <div>
-              <div className="text-gray-400 text-xs">Smallest MVP</div>
-              <div className="font-bold text-cyan-300 text-base">1 Work-Order Evidence Flow</div>
-            </div>
-            <div>
-              <div className="text-gray-400 text-xs">Pilot Revenue</div>
-              <div className="font-bold text-white text-base">$1,500 Pilot ➔ $499/mo</div>
-            </div>
-            <div>
-              <div className="text-gray-400 text-xs">Durable Moat</div>
-              <div className="font-bold text-emerald-400 text-base">Outcome Evidence Data</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* The 5-Link Chain Visualizer */}
-      <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">
-              The Real-World & Digital Chain of Custody
-            </h2>
-            <p className="text-xs text-gray-500">
-              Trigger ➔ Work ➔ Evidence ➔ Verification ➔ Settlement
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {SAMPLE_WORK_ORDERS.map((wo) => (
-              <button
-                key={wo.id}
-                onClick={() => {
-                  setSelectedWO(wo);
-                  setSettled(false);
-                  setVerificationDone(false);
-                }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                  selectedWO.id === wo.id
-                    ? 'bg-gray-900 text-white border-gray-900'
-                    : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                }`}
-              >
-                {wo.workOrderNumber} ({wo.workflowCategory.split(' ')[0]})
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Chain Steps Buttons */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          {[
-            { key: 'trigger', step: '01', title: '1. Trigger', sub: 'Ticket / Request' },
-            { key: 'work', step: '02', title: '2. Work', sub: 'Technician Dispatched' },
-            { key: 'evidence', step: '03', title: '3. Evidence', sub: 'Photos, Telemetry & GPS' },
-            { key: 'verification', step: '04', title: '4. Verification', sub: 'ProofAI Oracle Attest' },
-            { key: 'settlement', step: '05', title: '5. Settlement', sub: 'Payment Release' },
-          ].map((s) => (
+          {/* Radar Switcher Pills */}
+          <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
             <button
-              key={s.key}
-              onClick={() => setActiveChainStep(s.key as any)}
-              className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between ${
-                activeChainStep === s.key
-                  ? 'border-cyan-500 ring-2 ring-cyan-100 bg-cyan-50/30 shadow-md'
-                  : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
+              onClick={() => setRadarPillar('diamond')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                radarPillar === 'diamond'
+                  ? 'bg-cyan-500 text-gray-950 shadow-lg'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
               }`}
             >
-              <div className="text-[10px] font-mono font-bold text-gray-400 mb-1">{s.step}</div>
-              <div className="font-bold text-sm text-gray-900">{s.title}</div>
-              <div className="text-[11px] text-gray-500 mt-0.5">{s.sub}</div>
-              <div className="mt-3 pt-2 border-t border-gray-200 flex items-center justify-between text-[11px]">
-                <span className="text-emerald-600 font-bold flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" /> Captured
-                </span>
-              </div>
+              <Gem className="w-4 h-4" />
+              💎 DIAMOND: Job Acceptance Engine (Infrastructure)
             </button>
-          ))}
+
+            <button
+              onClick={() => setRadarPillar('gold')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                radarPillar === 'gold'
+                  ? 'bg-amber-400 text-gray-950 shadow-lg'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
+            >
+              <Coins className="w-4 h-4" />
+              🥇 GOLD: Closeout & Invoice-Support ($750 Pilot)
+            </button>
+
+            <button
+              onClick={() => setRadarPillar('silver')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                radarPillar === 'silver'
+                  ? 'bg-gray-200 text-gray-950 shadow-lg'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
+            >
+              <Cpu className="w-4 h-4" />
+              🥈 SILVER: Automation Maintenance Desk
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Work Order Proof Inspector */}
-      <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl space-y-8">
-        {/* Header summary of the work order */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-200">
+      {/* FLYWHEEL CONNECTION BANNER */}
+      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white rounded-2xl p-6 border border-gray-700 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-amber-400 text-gray-950 flex items-center justify-center font-bold text-xl shrink-0">
+            🥇➔💎
+          </div>
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-mono text-xs font-bold text-[#343CED] bg-blue-50 px-2.5 py-0.5 rounded">
-                {selectedWO.workOrderNumber}
-              </span>
-              <span className="text-xs text-gray-400 font-medium">|</span>
-              <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                {selectedWO.workflowCategory}
-              </span>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900">{selectedWO.title}</h3>
-            <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-1">
-              <MapPin className="w-3.5 h-3.5 text-gray-400" />
-              {selectedWO.propertyLocation}
+            <h4 className="font-bold text-sm text-amber-300">The Connective Flywheel: Gold ➔ Diamond</h4>
+            <p className="text-xs text-gray-300 mt-0.5">
+              Sell the outcome first (AI Closeout Service @ $750 pilot) ➔ accumulate customer acceptance rules & exception workflows ➔ build the permanent infrastructure moat (Job Acceptance Engine).
             </p>
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <div className="text-xs text-gray-400">Invoice Amount</div>
-              <div className="text-2xl font-black text-gray-900">${selectedWO.invoiceAmount.toFixed(2)}</div>
-            </div>
-            <span className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider ${
-              selectedWO.status === 'VERIFIED_AND_SETTLED'
-                ? 'bg-emerald-100 text-emerald-800'
-                : 'bg-amber-100 text-amber-800'
-            }`}>
-              {selectedWO.status === 'VERIFIED_AND_SETTLED' ? 'Settled & Paid' : 'Awaiting PM Approval'}
-            </span>
-          </div>
         </div>
+        <div className="text-right shrink-0">
+          <span className="text-xs font-mono text-[#D8FD49] font-bold">10 Jobs Pilot ➔ $1,000/mo MRR</span>
+        </div>
+      </div>
 
-        {/* Step 3: Before & After Evidence Canvas */}
-        {activeChainStep === 'evidence' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
+      {/* ========================================================================= */}
+      {/* 1. 💎 DIAMOND VIEW: JOB ACCEPTANCE ENGINE                                */}
+      {/* ========================================================================= */}
+      {radarPillar === 'diamond' && (
+        <div className="space-y-8 animate-fadeIn">
+          {/* Section summary */}
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
               <div>
-                <h4 className="font-bold text-lg text-gray-900">Physical Evidence Bundle</h4>
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 font-mono">
+                  THE INFRASTRUCTURE MOAT · $$$$$ POTENTIAL
+                </span>
+                <h2 className="text-2xl font-bold text-gray-900 mt-1">
+                  Job Acceptance Engine
+                </h2>
                 <p className="text-xs text-gray-500">
-                  Cryptographically sealed EXIF metadata, timestamped GPS coordinates, and component barcode.
+                  Build the layer between <strong>“job finished”</strong> and <strong>“job accepted for payment.”</strong>
                 </p>
               </div>
-              <span className="text-xs font-mono text-gray-400">
-                Geotag: {selectedWO.chain.evidence.geotag.lat}, {selectedWO.chain.evidence.geotag.lng}
-              </span>
-            </div>
-
-            {/* Before vs After Photos */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  <span>🔴 Before Work (Corroded Circulator)</span>
-                  <span className="font-mono text-gray-400">11:45 AM</span>
-                </div>
-                <div className="relative rounded-2xl overflow-hidden border border-gray-300 aspect-[4/3] bg-gray-100 shadow-inner group">
-                  <img
-                    src={selectedWO.chain.evidence.beforePhoto}
-                    alt="Before Maintenance"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-3 left-3 bg-black/70 text-white text-[11px] px-2.5 py-1 rounded-md font-mono backdrop-blur-sm">
-                    SHA-256: 0x8a1f...c09b
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-emerald-600 uppercase tracking-wider">
-                  <span>🟢 After Work (New OEM Taco 007-F5 Installed)</span>
-                  <span className="font-mono text-emerald-600">01:05 PM</span>
-                </div>
-                <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500 aspect-[4/3] bg-gray-100 shadow-md group">
-                  <img
-                    src={selectedWO.chain.evidence.afterPhoto}
-                    alt="After Maintenance"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-3 right-3 bg-emerald-500 text-white text-xs px-2.5 py-1 rounded-full font-bold shadow flex items-center gap-1">
-                    <BadgeCheck className="w-3.5 h-3.5" /> Installed & Tested
-                  </div>
-                  <div className="absolute bottom-3 left-3 bg-black/70 text-white text-[11px] px-2.5 py-1 rounded-md font-mono backdrop-blur-sm">
-                    SHA-256: 0x4f2b...99ee
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Checklist & Telemetry Rows */}
-            <div className="space-y-3 pt-4 border-t border-gray-100">
-              <div className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                Technician Checklist & Sensor Telemetry
-              </div>
-              <div className="grid md:grid-cols-2 gap-3">
-                {selectedWO.chain.evidence.checklists.map((chk) => (
-                  <div key={chk.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-gray-900">{chk.title}</span>
-                      <span className="text-emerald-600 text-xs font-bold flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> PASS
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-600">{chk.description}</p>
-                    <div className="text-[11px] font-mono text-[#343CED] bg-blue-50 px-2 py-0.5 rounded inline-block mt-1">
-                      Sensor: {chk.telemetryEvidence}
-                    </div>
-                  </div>
+              <div className="flex items-center gap-2">
+                {SAMPLE_WORK_ORDERS.map((wo) => (
+                  <button
+                    key={wo.id}
+                    onClick={() => {
+                      setSelectedWO(wo);
+                      setSettled(false);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                      selectedWO.id === wo.id
+                        ? 'bg-gray-900 text-white border-gray-900'
+                        : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    {wo.workOrderNumber} ({wo.workflowCategory.split(' ')[0]})
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
-              <div className="text-xs text-gray-500">
-                Contractor: <strong className="text-gray-900">{selectedWO.assignedContractor}</strong> (License Verified)
-              </div>
-              <button
-                onClick={handleRunVerification}
-                disabled={isVerifying}
-                className="bg-[#1a1a1a] hover:bg-black text-white px-8 py-3 rounded-xl font-bold text-xs flex items-center gap-2 shadow-lg transition-all disabled:opacity-50"
-              >
-                {isVerifying ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-cyan-300" />
-                    Executing ProofAI Oracle Verification...
-                  </>
-                ) : (
-                  <>
-                    <Gem className="w-4 h-4 text-cyan-300" />
-                    Verify Evidence with Doneproof Oracle ➔
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 4: Verification Oracle Details */}
-        {activeChainStep === 'verification' && (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl p-6 border border-gray-700 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono uppercase tracking-wider text-cyan-300 font-bold flex items-center gap-1.5">
-                  <Fingerprint className="w-4 h-4" />
-                  ProofAI Merkle Evidence Attestation
-                </span>
-                <span className="bg-emerald-500/20 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full">
-                  Confidence Score: {selectedWO.chain.verification.proofAiConfidenceScore}%
-                </span>
-              </div>
-
-              <div>
-                <div className="text-xs text-gray-400 mb-1">Merkle Root Hash (Immutable Audit Log)</div>
-                <div className="font-mono text-cyan-200 text-xs bg-black/50 p-3 rounded-xl break-all border border-gray-800">
-                  {selectedWO.chain.verification.merkleProofHash}
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-4 text-xs pt-2">
-                <div className="bg-white/5 p-3 rounded-xl">
-                  <div className="text-gray-400">EXIF Geofence Match</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">Mill City Lofts (0.002 mi)</div>
-                </div>
-                <div className="bg-white/5 p-3 rounded-xl">
-                  <div className="text-gray-400">Timestamp Continuity</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">11:45 AM ➔ 01:05 PM (Verified)</div>
-                </div>
-                <div className="bg-white/5 p-3 rounded-xl">
-                  <div className="text-gray-400">OEM Barcode Match</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">Taco 007-F5 (UL-Listed)</div>
-                </div>
-              </div>
+            {/* The 5-Link Chain */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+              {[
+                { key: 'trigger', step: '01', title: '1. Trigger', sub: 'Ticket / Request' },
+                { key: 'work', step: '02', title: '2. Work', sub: 'Technician Dispatched' },
+                { key: 'evidence', step: '03', title: '3. Evidence', sub: 'Photos, Telemetry & GPS' },
+                { key: 'verification', step: '04', title: '4. Verification', sub: 'ProofAI Oracle Attest' },
+                { key: 'settlement', step: '05', title: '5. Settlement', sub: 'Payment Release' },
+              ].map((s) => (
+                <button
+                  key={s.key}
+                  onClick={() => setActiveChainStep(s.key as any)}
+                  className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                    activeChainStep === s.key
+                      ? 'border-cyan-500 ring-2 ring-cyan-100 bg-cyan-50/30 shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
+                  }`}
+                >
+                  <div className="text-[10px] font-mono font-bold text-gray-400 mb-1">{s.step}</div>
+                  <div className="font-bold text-sm text-gray-900">{s.title}</div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">{s.sub}</div>
+                  <div className="mt-3 pt-2 border-t border-gray-200 flex items-center justify-between text-[11px]">
+                    <span className="text-emerald-600 font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Captured
+                    </span>
+                  </div>
+                </button>
+              ))}
             </div>
 
-            {/* PM Approval Call to Action */}
-            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <h4 className="font-bold text-gray-900 text-base">
-                  Ready for Property Director Sign-off & Payout Release
-                </h4>
-                <p className="text-xs text-gray-600 mt-0.5">
-                  All work verified against work order specs. Clicking approve releases the $850.00 contractor invoice.
-                </p>
+            {/* Evidence & Acceptance Inspector */}
+            <div className="pt-4 border-t border-gray-100 space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                <div>
+                  <h4 className="font-bold text-lg text-gray-900">{selectedWO.title}</h4>
+                  <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                    {selectedWO.propertyLocation} • Contractor: <strong>{selectedWO.assignedContractor}</strong>
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-gray-400">Invoice Amount</div>
+                  <div className="text-2xl font-black text-gray-900">${selectedWO.invoiceAmount.toFixed(2)}</div>
+                </div>
               </div>
-              <button
-                onClick={handleApproveSettlement}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold text-xs flex items-center gap-2 shadow-md transition-all whitespace-nowrap"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                Approve & Release ${selectedWO.invoiceAmount.toFixed(2)}
-              </button>
-            </div>
-          </div>
-        )}
 
-        {/* Step 5: Settlement & Shareable Certificate */}
-        {activeChainStep === 'settlement' && (
-          <div className="space-y-6">
-            <div className="bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-8 text-center space-y-4 max-w-xl mx-auto">
-              <div className="w-16 h-16 rounded-full bg-emerald-500 text-white flex items-center justify-center mx-auto shadow-lg">
-                <BadgeCheck className="w-10 h-10" />
+              {/* Before vs After Photos */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <span>🔴 Before Work (Damaged / Replaced Component)</span>
+                    <span className="font-mono text-gray-400">11:45 AM</span>
+                  </div>
+                  <div className="relative rounded-2xl overflow-hidden border border-gray-300 aspect-[4/3] bg-gray-100 shadow-inner">
+                    <img
+                      src={selectedWO.chain.evidence.beforePhoto}
+                      alt="Before Maintenance"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-3 left-3 bg-black/70 text-white text-[11px] px-2.5 py-1 rounded-md font-mono backdrop-blur-sm">
+                      SHA-256: 0x8a1f...c09b
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                    <span>🟢 After Work (OEM Taco 007-F5 Installed & Tested)</span>
+                    <span className="font-mono text-emerald-600">01:05 PM</span>
+                  </div>
+                  <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500 aspect-[4/3] bg-gray-100 shadow-md">
+                    <img
+                      src={selectedWO.chain.evidence.afterPhoto}
+                      alt="After Maintenance"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-3 right-3 bg-emerald-500 text-white text-xs px-2.5 py-1 rounded-full font-bold shadow flex items-center gap-1">
+                      <BadgeCheck className="w-3.5 h-3.5" /> Installed & Tested
+                    </div>
+                    <div className="absolute bottom-3 left-3 bg-black/70 text-white text-[11px] px-2.5 py-1 rounded-md font-mono backdrop-blur-sm">
+                      SHA-256: 0x4f2b...99ee
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h4 className="text-2xl font-bold text-gray-900">Work Order Verified & Settled</h4>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                Payment of <strong>${selectedWO.invoiceAmount.toFixed(2)}</strong> released to {selectedWO.assignedContractor}.
-                The tamper-proof completion certificate is now permanently accessible for insurance, property audits, and owner reporting.
-              </p>
 
-              <div className="pt-2">
-                <div className="font-mono text-xs text-gray-500 bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
-                  <span className="truncate">{selectedWO.shareableCertificateUrl}</span>
+              {/* Action bar */}
+              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                  <h4 className="font-bold text-sm text-gray-900">ProofAI Acceptance Oracle Attestation</h4>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Merkle root: <code className="text-cyan-700 font-bold">{selectedWO.chain.verification.merkleProofHash.substring(0, 24)}...</code>
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
                   <button
-                    onClick={handleCopyLink}
-                    className="text-xs font-bold text-[#343CED] ml-2 shrink-0 flex items-center gap-1"
+                    onClick={handleRunVerification}
+                    disabled={isVerifying}
+                    className="bg-[#1a1a1a] hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all disabled:opacity-50"
                   >
-                    {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copiedLink ? 'Copied' : 'Copy'}
+                    {isVerifying ? <RefreshCw className="w-4 h-4 animate-spin text-cyan-300" /> : <Gem className="w-4 h-4 text-cyan-300" />}
+                    {isVerifying ? 'Verifying Evidence...' : 'Re-verify Evidence'}
+                  </button>
+                  <button
+                    onClick={handleApproveSettlement}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Accept Job & Release ${selectedWO.invoiceAmount.toFixed(2)}
                   </button>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
-
-      {/* The 48-Hour Twin Cities Commercial Move */}
-      <div className="bg-gradient-to-r from-gray-900 via-[#1a1a1a] to-gray-900 rounded-3xl p-8 text-white border border-gray-800 space-y-6">
-        <div className="flex items-center justify-between border-b border-gray-800 pb-4">
-          <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#D8FD49] font-bold">
-              The Money Path · 48-Hour Validation Move
-            </span>
-            <h3 className="text-2xl font-bold mt-1">Twin Cities Property Manager Pilot Offer</h3>
-          </div>
-          <span className="text-xs bg-white/10 px-3 py-1 rounded-full font-bold text-cyan-300">
-            Validated Sales Script
-          </span>
         </div>
+      )}
 
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-3">
-            <h4 className="font-bold text-base text-gray-200">The Problem You Ask 5 Local Operators:</h4>
-            <p className="text-xs text-gray-400 leading-relaxed italic bg-black/40 p-4 rounded-xl border border-gray-800">
-              "How much time do your property managers waste chasing HVAC contractors for before/after photos, verifying whether a tenant's heating leak was actually fixed, and arguing over disputed invoices before releasing payment?"
-            </p>
-            <div className="text-xs text-gray-300 font-semibold">
-              ➔ Pitch: "We give you a single shareable Doneproof link for every work order: timestamped photos, GPS, torque/pressure readings, and 1-click settlement sign-off."
+      {/* ========================================================================= */}
+      {/* 2. 🥇 GOLD VIEW: AI CLOSEOUT & INVOICE-SUPPORT SERVICE                  */}
+      {/* ========================================================================= */}
+      {radarPillar === 'gold' && (
+        <div className="space-y-8 animate-fadeIn">
+          {/* Revenue wedge banner */}
+          <div className="bg-white rounded-3xl p-8 border-2 border-amber-400 shadow-xl space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-600 font-mono">
+                  FASTEST PATH TO REVENUE · $$$$ POTENTIAL · SELL THIS FIRST
+                </span>
+                <h2 className="text-2xl font-bold text-gray-900 mt-1">
+                  AI Closeout & Invoice-Support Service
+                </h2>
+                <p className="text-xs text-gray-500">
+                  "Don't start with software. Sell the outcome first: A contractor sends completed jobs; AI workers assemble the billing packet."
+                </p>
+              </div>
+              <div className="bg-amber-50 border border-amber-300 text-amber-900 px-4 py-2 rounded-xl text-xs font-bold">
+                Commercial Wedge: 10 Jobs ➔ $750 Pilot ➔ ~$1,000/mo
+              </div>
             </div>
-          </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-            <div className="text-xs font-bold uppercase tracking-wider text-cyan-300">Commercial Pilot Terms</div>
-            <div className="flex items-baseline justify-between">
-              <span className="text-gray-300 text-sm">30-Day Paid Setup & Pilot:</span>
-              <span className="text-2xl font-black text-white">$1,500</span>
+            {/* Packet Selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-400 mr-2">Sample Contractor Jobs:</span>
+              {closeoutPackets.map((pkt) => (
+                <button
+                  key={pkt.id}
+                  onClick={() => {
+                    setSelectedPacket(pkt);
+                    setPacketGenerated(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                    selectedPacket.id === pkt.id
+                      ? 'bg-amber-400 text-gray-950 border-amber-400 shadow'
+                      : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  {pkt.workOrderNumber} ({pkt.billingReadinessStatus === 'BILLING_READY' ? '🟢 Ready' : '🔴 Missing Items'})
+                </button>
+              ))}
             </div>
-            <div className="flex items-baseline justify-between border-t border-white/10 pt-2">
-              <span className="text-gray-300 text-sm">Recurring Monthly Fee:</span>
-              <span className="text-xl font-bold text-[#D8FD49]">$499 <span className="text-xs text-gray-400">/ property group</span></span>
-            </div>
-            <div className="text-[11px] text-gray-400 pt-1">
-              Includes Doneproof Oracle attestation, contractor mobile upload portal, and AppFolio / Buildium webhook integration.
+
+            {/* Live Packet Breakdown */}
+            <div className="grid md:grid-cols-2 gap-8 pt-2">
+              {/* Left Column: Requirements & Tech Notes */}
+              <div className="space-y-4">
+                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase text-gray-500">Customer Requirements Checklist</span>
+                    <span className="text-xs font-mono text-gray-400">{selectedPacket.clientName}</span>
+                  </div>
+                  <ul className="space-y-2 text-xs">
+                    {selectedPacket.clientRequirements.map((req, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-gray-700">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                        <span>{req}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 space-y-2">
+                  <span className="text-xs font-bold uppercase text-gray-500">Technician Field Notes</span>
+                  <p className="text-xs text-gray-700 leading-relaxed italic bg-white p-3 rounded-xl border border-gray-200">
+                    "{selectedPacket.techNotes}"
+                  </p>
+                  <div className="flex items-center justify-between text-[11px] text-gray-500 pt-1">
+                    <span>Photos attached: <strong>{selectedPacket.photosUploadedCount} images</strong></span>
+                    <span>PO Status: <strong className="text-gray-900">{selectedPacket.poNumber}</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: AI Assembly & Missing Evidence Engine */}
+              <div className="space-y-4">
+                <div className={`rounded-2xl p-6 border transition-all ${
+                  selectedPacket.billingReadinessStatus === 'BILLING_READY'
+                    ? 'bg-emerald-50/60 border-emerald-300'
+                    : 'bg-amber-50/60 border-amber-300'
+                }`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700">Billing-Readiness Audit</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                      selectedPacket.billingReadinessStatus === 'BILLING_READY'
+                        ? 'bg-emerald-200 text-emerald-900'
+                        : 'bg-amber-200 text-amber-900'
+                    }`}>
+                      {selectedPacket.billingReadinessStatus === 'BILLING_READY' ? 'Ready for Customer Invoicing' : 'Missing Critical Evidence'}
+                    </span>
+                  </div>
+
+                  {selectedPacket.missingEvidence.length > 0 ? (
+                    <div className="space-y-2 mb-4">
+                      <div className="text-xs font-bold text-red-600 flex items-center gap-1.5">
+                        <AlertTriangle className="w-4 h-4" /> Detected Missing Closeout Items:
+                      </div>
+                      <div className="space-y-1.5">
+                        {selectedPacket.missingEvidence.map((err, idx) => (
+                          <div key={idx} className="text-xs bg-red-100 text-red-800 p-2 rounded-lg font-medium">
+                            • {err}
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[11px] text-gray-500 mt-2">
+                        Submitting this invoice now would cause a 21-day payment rejection loop from Cushman & Wakefield.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 mb-4">
+                      <div className="text-xs font-bold text-emerald-700 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4" /> All Customer Acceptance Criteria Verified
+                      </div>
+                      <p className="text-xs text-gray-600">
+                        PO-2026-98124 verified in client portal. High-vacuum micron log and EPA 608 recovery tag match line items.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-gray-400">Invoice Total</div>
+                      <div className="text-2xl font-black text-gray-900">${selectedPacket.invoiceAmount.toFixed(2)}</div>
+                    </div>
+                    <button
+                      onClick={handleAssembleCloseout}
+                      disabled={isAssembling}
+                      className="bg-amber-400 hover:bg-amber-500 text-gray-950 font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow transition-all"
+                    >
+                      {isAssembling ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+                      {isAssembling ? 'Assembling Packet...' : 'Generate Billing Packet'}
+                    </button>
+                  </div>
+                </div>
+
+                {packetGenerated && (
+                  <div className="bg-gray-900 text-white p-5 rounded-2xl space-y-3 font-mono text-xs animate-fadeIn">
+                    <div className="flex items-center justify-between text-emerald-400 pb-2 border-b border-gray-800">
+                      <span>PACKET ASSEMBLED (PDF + JSON)</span>
+                      <span>Ready for Client Submission</span>
+                    </div>
+                    <div className="text-gray-300">
+                      File: <strong className="text-white">CLOSEOUT_{selectedPacket.workOrderNumber}_VERIFIED.pdf</strong>
+                    </div>
+                    <div className="text-gray-400 text-[11px]">
+                      Includes: Customer PO #, signed sign-off slip, before/after photos with geofence, and technician notes.
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 3. 🥈 SILVER VIEW: AUTOMATION MAINTENANCE / EXCEPTION DESK               */}
+      {/* ========================================================================= */}
+      {radarPillar === 'silver' && (
+        <div className="space-y-8 animate-fadeIn">
+          {/* Silver Desk Banner */}
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-purple-600 font-mono">
+                  HIGH-MARGIN RECURRING MRR · $$$ POTENTIAL
+                </span>
+                <h2 className="text-2xl font-bold text-gray-900 mt-1">
+                  AI Operations Maintenance & Exception Desk
+                </h2>
+                <p className="text-xs text-gray-500">
+                  "Businesses pay once for automation, but the recurring revenue is maintaining it when reality breaks the automation."
+                </p>
+              </div>
+              <div className="text-xs font-mono bg-purple-50 text-purple-700 px-3 py-1.5 rounded-xl font-bold border border-purple-200">
+                Watching: ERP → Work Order → Docs → Accounting → Approval
+              </div>
+            </div>
+
+            {/* Exception Incident Stream */}
+            <div className="space-y-4">
+              <div className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                Active Workflow Breakdown Incidents (Real-Time Exception Queue)
+              </div>
+
+              <div className="space-y-3">
+                {exceptions.map((exc) => {
+                  const isResolved = resolvedIds.includes(exc.id);
+                  return (
+                    <div
+                      key={exc.id}
+                      className={`p-6 rounded-2xl border transition-all ${
+                        isResolved
+                          ? 'bg-emerald-50/40 border-emerald-300 opacity-80'
+                          : 'bg-white border-gray-200 hover:border-purple-300 shadow-sm'
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-100 mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                            isResolved ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {isResolved ? 'RESOLVED & PATCHED' : exc.failedStep}
+                          </span>
+                          <span className="text-xs font-mono text-gray-400">{exc.timeAgo}</span>
+                        </div>
+                        <span className="text-xs font-mono text-gray-500">{exc.workflowChain}</span>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <div className="font-bold text-red-600 mb-1">What Broke in the Real World:</div>
+                          <p className="text-gray-700 bg-red-50/50 p-3 rounded-xl border border-red-200">
+                            {exc.detectedProblem}
+                          </p>
+                        </div>
+
+                        <div>
+                          <div className="font-bold text-purple-600 mb-1">Agent Autonomous Investigation:</div>
+                          <p className="text-gray-700 bg-purple-50/50 p-3 rounded-xl border border-purple-200">
+                            {exc.agentInvestigation}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="text-xs text-gray-600">
+                          <strong>Prepared Resolution: </strong> {exc.preparedResolution}
+                        </div>
+                        {!isResolved ? (
+                          <button
+                            onClick={() => handleResolveException(exc.id)}
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all whitespace-nowrap"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Confirm Agent Fix ➔
+                          </button>
+                        ) : (
+                          <span className="text-emerald-600 font-bold text-xs flex items-center gap-1">
+                            <CheckCircle2 className="w-4 h-4" /> Workflow Resumed in ERP
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
