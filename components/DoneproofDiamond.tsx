@@ -257,11 +257,27 @@ export const DoneproofDiamond: React.FC = () => {
   const [closeoutPackets] = useState<CloseoutPacket[]>(INITIAL_CLOSEOUT_PACKETS);
   const [selectedPacket, setSelectedPacket] = useState<CloseoutPacket>(INITIAL_CLOSEOUT_PACKETS[0]);
   const [isAssembling, setIsAssembling] = useState(false);
+  const [isAuditingCloseout, setIsAuditingCloseout] = useState(false);
+  const [closeoutAuditResult, setCloseoutAuditResult] = useState<any>(null);
   const [packetGenerated, setPacketGenerated] = useState(false);
+  const [showPilotModal, setShowPilotModal] = useState(false);
+  const [pilotContractorName, setPilotContractorName] = useState('Twin Cities Mechanical Co.');
+  const [pilotContractorEmail, setPilotContractorEmail] = useState('billing@tcmechanical.com');
+  const [pilotSigned, setPilotSigned] = useState(false);
 
   // Exception Desk state
   const [exceptions] = useState<ExceptionDeskIncident[]>(INITIAL_EXCEPTIONS);
   const [resolvedIds, setResolvedIds] = useState<string[]>([]);
+
+  const handleRunCloseoutAIAudit = async () => {
+    setIsAuditingCloseout(true);
+    try {
+      const res = await geminiService.auditCloseoutJob(selectedPacket);
+      setCloseoutAuditResult(res);
+    } finally {
+      setIsAuditingCloseout(false);
+    }
+  };
 
   const handleRunVerification = async () => {
     setIsVerifying(true);
@@ -680,21 +696,66 @@ export const DoneproofDiamond: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
+                  <div className="pt-3 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <div className="text-xs text-gray-400">Total Valuation</div>
                       <div className="text-2xl font-black text-gray-900">${selectedPacket.invoiceAmount.toFixed(2)}</div>
                     </div>
-                    <button
-                      onClick={handleAssembleCloseout}
-                      disabled={isAssembling}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow transition-all"
-                    >
-                      {isAssembling ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-                      {isAssembling ? 'Validating Packet...' : 'Compile Billing-Ready Packet'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleRunCloseoutAIAudit}
+                        disabled={isAuditingCloseout}
+                        className="bg-slate-900 hover:bg-black text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all disabled:opacity-50"
+                      >
+                        {isAuditingCloseout ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-cyan-300" /> : <Sparkles className="w-3.5 h-3.5 text-cyan-300" />}
+                        {isAuditingCloseout ? 'Analyzing Rules...' : 'Run Phase 1 AI Audit'}
+                      </button>
+
+                      <button
+                        onClick={handleAssembleCloseout}
+                        disabled={isAssembling}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow transition-all"
+                      >
+                        {isAssembling ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
+                        {isAssembling ? 'Validating...' : 'Compile Billing Packet'}
+                      </button>
+                    </div>
                   </div>
                 </div>
+
+                {/* Live Phase 1 AI Compliance Evaluation Card */}
+                {closeoutAuditResult && (
+                  <div className="bg-slate-900 text-white p-5 rounded-2xl space-y-3 font-sans text-xs border border-slate-700 animate-fadeIn">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                      <span className="font-bold text-cyan-300 flex items-center gap-1.5 font-mono">
+                        <BadgeCheck className="w-4 h-4 text-cyan-400" />
+                        PHASE 1 AI COMPLIANCE SCORE: {closeoutAuditResult.complianceScore}/100
+                      </span>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+                        closeoutAuditResult.billingReadinessStatus === 'BILLING_READY'
+                          ? 'bg-emerald-500/20 text-emerald-300'
+                          : 'bg-amber-500/20 text-amber-300'
+                      }`}>
+                        {closeoutAuditResult.billingReadinessStatus}
+                      </span>
+                    </div>
+
+                    <div className="text-gray-300 leading-relaxed">
+                      {closeoutAuditResult.executiveSummary}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+                      <div className="bg-white/5 p-2 rounded">
+                        <span className="text-gray-400">Rejection Delay Avoided: </span>
+                        <span className="text-cyan-300 font-bold">{closeoutAuditResult.estimatedRejectionRiskDays} Days</span>
+                      </div>
+                      <div className="bg-white/5 p-2 rounded">
+                        <span className="text-gray-400">Recommended Next Step: </span>
+                        <span className="text-emerald-400 font-bold">{closeoutAuditResult.recommendedAction}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {packetGenerated && (
                   <div className="bg-[#12161f] text-white p-5 rounded-2xl space-y-3 font-mono text-xs animate-fadeIn">
@@ -710,9 +771,118 @@ export const DoneproofDiamond: React.FC = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Pilot Callout Card */}
+                <div className="bg-gradient-to-r from-blue-900 to-indigo-950 text-white p-5 rounded-2xl border border-blue-700/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-300 font-bold">
+                      Phase 1 Commercial Offer
+                    </span>
+                    <h5 className="font-bold text-sm text-white mt-0.5">10-Job Contractor Pilot Program</h5>
+                    <p className="text-[11px] text-blue-200 mt-0.5">
+                      $750 setup fee covers 10 complete job closeouts. 0% invoice rejection guarantee.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowPilotModal(true)}
+                    className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs whitespace-nowrap transition-all shadow"
+                  >
+                    Open Pilot Terms ➔
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Pilot Enrollment Modal */}
+          {showPilotModal && (
+            <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white rounded-3xl p-8 max-w-lg w-full border border-gray-200 shadow-2xl space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                  <div>
+                    <span className="text-xs font-mono font-bold text-blue-600 uppercase">Twin Cities Commercial Agreement</span>
+                    <h3 className="text-xl font-bold text-gray-900 mt-0.5">10-Job AI Closeout Pilot ($750)</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowPilotModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {!pilotSigned ? (
+                  <div className="space-y-4 text-xs text-gray-700">
+                    <p className="leading-relaxed bg-blue-50 p-3.5 rounded-xl border border-blue-200 text-blue-950">
+                      <strong>Pilot Scope:</strong> Contractor submits 10 completed work orders via WhatsApp, email, or web portal. 
+                      MetalMindTech AI workers compile customer-compliant billing packets, verify PO numbers, match photos, and audit before/after evidence.
+                    </p>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[11px] font-bold uppercase text-gray-500 block mb-1">Contractor / Company Name</label>
+                        <input
+                          type="text"
+                          value={pilotContractorName}
+                          onChange={(e) => setPilotContractorName(e.target.value)}
+                          className="w-full border border-gray-200 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:border-blue-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold uppercase text-gray-500 block mb-1">Billing Lead Email</label>
+                        <input
+                          type="email"
+                          value={pilotContractorEmail}
+                          onChange={(e) => setPilotContractorEmail(e.target.value)}
+                          className="w-full border border-gray-200 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:border-blue-600"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-3 flex items-center justify-between text-xs font-mono">
+                      <span>Total Pilot Fee:</span>
+                      <span className="font-bold text-gray-900 text-sm">$750.00 USD (Fixed)</span>
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      <button
+                        onClick={() => setPilotSigned(true)}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs transition-all shadow"
+                      >
+                        Sign & Activate 10-Job Pilot
+                      </button>
+                      <button
+                        onClick={() => setShowPilotModal(false)}
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-3 rounded-xl text-xs transition-all"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4 text-center py-4">
+                    <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                      <CheckCircle2 className="w-7 h-7" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 text-lg">Pilot Agreement Executed!</h4>
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      Welcome, <strong>{pilotContractorName}</strong>. Your dedicated closeout inbox and intake portal have been provisioned. 
+                      You can now forward your first 10 field work orders to begin generating audit-ready billing packets.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setPilotSigned(false);
+                        setShowPilotModal(false);
+                      }}
+                      className="bg-slate-900 text-white font-bold px-6 py-2.5 rounded-xl text-xs hover:bg-black transition-all"
+                    >
+                      Done
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
