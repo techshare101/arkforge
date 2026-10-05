@@ -212,20 +212,63 @@ export interface WorkOrderProofRecord {
 // -------------------------------------------------------------
 // 5. ASTRA OPPORTUNITY RADAR: DIAMOND, GOLD, SILVER
 // -------------------------------------------------------------
+export interface PhotoEvidenceItem {
+  id: string;
+  url: string;
+  label: 'BEFORE_WORK' | 'AFTER_WORK' | 'BARCODE_SERIAL' | 'PRESSURE_GAUGE' | 'TENANT_SIGNOFF';
+  timestamp: string;
+  geotag?: string;
+  verified: boolean;
+}
+
+export interface ClientComplianceRule {
+  id: string;
+  clientName: string;
+  accountCategory: 'Commercial Real Estate' | 'Retail Facilities' | 'Multi-Family Residential' | 'Municipal Public Housing';
+  requirements: string[];
+  minPhotosRequired: number;
+  requiresPOOnHeader: boolean;
+  requiresCustomerSignoff: boolean;
+  requiresBarcodeSerialMatch: boolean;
+  requiresTorqueOrPressureReading: boolean;
+  standardPaymentCycleDays: number;
+  averageRejectionPenaltyDays: number;
+  portalSubmissionUrl?: string;
+}
+
 export interface CloseoutPacket {
   id: string;
   contractorName: string;
+  contractorLicense?: string;
   clientName: string;
   poNumber: string;
   workOrderNumber: string;
   clientRequirements: string[];
   techNotes: string;
   photosUploadedCount: number;
+  photos?: PhotoEvidenceItem[];
   customerSignoffObtained: boolean;
+  customerSignoffSigner?: string;
+  telemetricGaugeReading?: string;
   missingEvidence: string[];
   billingReadinessStatus: 'BILLING_READY' | 'MISSING_EVIDENCE' | 'EXCEPTION_ROUTED';
+  complianceScore: number;
   invoiceAmount: number;
   assembledAt: string;
+  merkleAuditHash?: string;
+  pilotSlotNumber?: number;
+  rejectionRiskDays?: number;
+  aiExecutiveSummary?: string;
+  recommendedAction?: string;
+}
+
+export interface PilotSlotTracker {
+  slotNumber: number;
+  status: 'COMPLETED' | 'IN_REVIEW' | 'AVAILABLE';
+  workOrderNumber?: string;
+  contractorName?: string;
+  invoiceAmount?: number;
+  rejectionDaysSaved?: number;
 }
 
 export interface ExceptionDeskIncident {

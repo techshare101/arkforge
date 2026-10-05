@@ -192,6 +192,7 @@ const INITIAL_CLOSEOUT_PACKETS: CloseoutPacket[] = [
     customerSignoffObtained: true,
     missingEvidence: [],
     billingReadinessStatus: 'BILLING_READY',
+    complianceScore: 98,
     invoiceAmount: 4850.00,
     assembledAt: '10:14 AM Today'
   },
@@ -215,6 +216,7 @@ const INITIAL_CLOSEOUT_PACKETS: CloseoutPacket[] = [
       'Customer PO Number is missing or unverified in Cushman portal'
     ],
     billingReadinessStatus: 'MISSING_EVIDENCE',
+    complianceScore: 56,
     invoiceAmount: 2340.00,
     assembledAt: '09:42 AM Today'
   }

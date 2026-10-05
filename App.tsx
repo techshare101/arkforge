@@ -5,6 +5,7 @@ import ConversionStudio from './components/ConversionStudio';
 import LaborCloud from './components/LaborCloud';
 import AgentReadyAudit from './components/AgentReadyAudit';
 import DoneproofDiamond from './components/DoneproofDiamond';
+import CloseoutWorkspace from './components/CloseoutWorkspace';
 import { 
   ArrowRight, 
   Bot, 
@@ -26,7 +27,7 @@ import {
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'conversion' | 'labor' | 'agentready' | 'diamond'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'closeout' | 'conversion' | 'labor' | 'agentready' | 'diamond'>('overview');
   const [demoRoleTab, setDemoRoleTab] = useState('Engineering');
 
   const demoRoles = [
@@ -59,6 +60,18 @@ export const App: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('closeout')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeTab === 'closeout'
+                  ? 'bg-blue-600 text-white shadow ring-2 ring-blue-300'
+                  : 'text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200'
+              }`}
+            >
+              <FileCheck className="w-3.5 h-3.5 text-cyan-500" />
+              Phase 1: Closeout Desk
+            </button>
+
+            <button
               onClick={() => setActiveTab('diamond')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                 activeTab === 'diamond'
@@ -66,8 +79,8 @@ export const App: React.FC = () => {
                   : 'text-cyan-900 bg-cyan-50/70 hover:bg-cyan-100 border border-cyan-200'
               }`}
             >
-              <FileCheck className="w-3.5 h-3.5 text-cyan-600" />
-              Outcome Verification (Doneproof)
+              <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
+              Doneproof Oracle
             </button>
 
             <button
@@ -114,6 +127,9 @@ export const App: React.FC = () => {
           </div>
         </div>
 
+        {/* View: Phase 1 Closeout Workspace */}
+        {activeTab === 'closeout' && <CloseoutWorkspace />}
+
         {/* View: Outcome Verification (Doneproof) */}
         {activeTab === 'diamond' && <DoneproofDiamond />}
 
@@ -151,25 +167,25 @@ export const App: React.FC = () => {
 
                   <div className="flex flex-wrap gap-4 pt-2">
                     <button
-                      onClick={() => setActiveTab('diamond')}
-                      className="bg-cyan-700 hover:bg-cyan-800 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                      onClick={() => setActiveTab('closeout')}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
                     >
                       <FileCheck className="w-4 h-4 text-cyan-200" />
-                      Outcome Verification Engine
+                      Phase 1: Closeout Desk ($750 Pilot)
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('diamond')}
+                      className="bg-slate-900 hover:bg-black text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 border border-slate-700"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-cyan-300" />
+                      Outcome Verification (Doneproof)
                     </button>
                     <button
                       onClick={() => setActiveTab('conversion')}
-                      className="bg-blue-600 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                      className="bg-white border border-gray-300 text-gray-800 px-6 py-3.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all flex items-center gap-2"
                     >
-                      <Zap className="w-4 h-4 text-cyan-300" />
+                      <Zap className="w-4 h-4 text-cyan-500" />
                       Conversion Studio
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('agentready')}
-                      className="bg-white border border-gray-300 text-gray-800 px-8 py-3.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all flex items-center gap-2"
-                    >
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      AgentReady Audit
                     </button>
                   </div>
 

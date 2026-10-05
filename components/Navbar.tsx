@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Cpu, Terminal, Layers, FileCheck, CheckCircle2 } from 'lucide-react';
 
 interface NavbarProps {
-  currentTab: 'overview' | 'conversion' | 'labor' | 'agentready' | 'diamond';
-  onSelectTab: (tab: 'overview' | 'conversion' | 'labor' | 'agentready' | 'diamond') => void;
+  currentTab: 'overview' | 'closeout' | 'diamond' | 'conversion' | 'labor' | 'agentready';
+  onSelectTab: (tab: 'overview' | 'closeout' | 'diamond' | 'conversion' | 'labor' | 'agentready') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
@@ -21,13 +21,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
     <>
       {/* Top Industrial Mission Signal Bar */}
       <div className="bg-[#0f131a] text-white py-2 px-6 text-center text-xs font-medium relative z-[60] border-b border-gray-800">
-        <span className="text-cyan-300 font-bold mr-1">Industrial Agent Infrastructure:</span>
-        Autonomous task execution, multimodal evidence verification, and cryptographic settlement release.
+        <span className="text-cyan-300 font-bold mr-1">Phase 1 Commercial Wedge:</span>
+        AI Closeout & Invoice-Support Service active — 10 Jobs @ $750 Pilot. 0% AP invoice rejections.
         <button 
-          onClick={() => onSelectTab('diamond')}
-          className="underline ml-2 hover:text-cyan-300 font-bold"
+          onClick={() => onSelectTab('closeout')}
+          className="underline ml-2 hover:text-cyan-300 font-bold font-mono"
         >
-          Inspect Outcome Verification Protocol →
+          Open Closeout Desk →
         </button>
       </div>
 
@@ -59,7 +59,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
-                Platform Overview
+                Overview
+              </button>
+
+              <button
+                onClick={() => onSelectTab('closeout')}
+                className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
+                  currentTab === 'closeout'
+                    ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-300'
+                    : 'text-blue-900 hover:text-blue-950 bg-blue-50 hover:bg-blue-100 border border-blue-200'
+                }`}
+              >
+                <FileCheck className="w-3.5 h-3.5 text-cyan-500" />
+                Phase 1: Closeout Desk
               </button>
 
               <button
@@ -70,8 +82,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                     : 'text-cyan-900 hover:text-cyan-950 bg-cyan-50/80 hover:bg-cyan-100 border border-cyan-200'
                 }`}
               >
-                <FileCheck className="w-3.5 h-3.5 text-cyan-600" />
-                Outcome Verification (Doneproof)
+                <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
+                Doneproof Oracle
               </button>
 
               <button
@@ -83,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-                1. Conversion Studio
+                1. Studio
               </button>
 
               <button
@@ -95,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-                2. Ark Labor Cloud
+                2. Ark Labor
               </button>
 
               <button
@@ -107,18 +119,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                3. AgentReady Governance
+                3. Governance
               </button>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => onSelectTab('diamond')}
-              className="hidden sm:flex items-center gap-1.5 bg-slate-900 hover:bg-black text-cyan-300 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-slate-700"
+              onClick={() => onSelectTab('closeout')}
+              className="hidden sm:flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow"
             >
-              <FileCheck className="w-3.5 h-3.5 text-cyan-400" />
-              Verify Work Order
+              <FileCheck className="w-3.5 h-3.5 text-cyan-200" />
+              Run Closeout Audit
             </button>
             <button
               onClick={() => onSelectTab('conversion')}
