@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Cpu, Terminal, Layers, FileCheck, CheckCircle2, Wrench } from 'lucide-react';
+import { ShieldCheck, Cpu, Terminal, Layers, FileCheck, CheckCircle2, Wrench, Target } from 'lucide-react';
 
 interface NavbarProps {
-  currentTab: 'overview' | 'closeout' | 'exceptions' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready';
-  onSelectTab: (tab: 'overview' | 'closeout' | 'exceptions' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready') => void;
+  currentTab: 'overview' | 'closeout' | 'exceptions' | 'outreach' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready';
+  onSelectTab: (tab: 'overview' | 'closeout' | 'exceptions' | 'outreach' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
@@ -84,6 +84,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
               >
                 <Wrench className="w-3.5 h-3.5 text-purple-600" />
                 Phase 2: Exceptions
+              </button>
+
+              <button
+                onClick={() => onSelectTab('outreach')}
+                className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
+                  currentTab === 'outreach'
+                    ? 'bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-300'
+                    : 'text-emerald-900 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200'
+                }`}
+              >
+                <Target className="w-3.5 h-3.5 text-emerald-600" />
+                48-Hour Wave
               </button>
 
               <button

@@ -743,6 +743,99 @@ Return a JSON object:
     };
   }
 
+  /**
+   * 9. 48-HOUR COMMERCIAL PILOT PITCH GENERATOR
+   * Generates tailored cold email, LinkedIn DM, phone hook, and ROI pitch for Twin Cities operators.
+   */
+  async generateCommercialPilotPitch(lead: {
+    companyName: string;
+    decisionMaker: string;
+    title: string;
+    category: string;
+    metroLocation: string;
+    primaryPainPoint: string;
+    annualInvoicedEstimate: number;
+    currentARDelayDays: number;
+  }): Promise<{
+    subjectLine: string;
+    emailPitch: string;
+    linkedInPitch: string;
+    phoneScript: string;
+    roiCalculation: {
+      daysAccelerated: number;
+      workingCapitalUnlockedUsd: number;
+      annualHoursSaved: number;
+    };
+  }> {
+    const ai = this.getClient();
+    const daysAccelerated = Math.max(lead.currentARDelayDays - 2, 14);
+    const capitalUnlocked = Math.round((lead.annualInvoicedEstimate / 365) * daysAccelerated);
+    const hoursSaved = Math.round((lead.annualInvoicedEstimate / 1500) * 1.5);
+
+    if (ai) {
+      try {
+        const prompt = `You are the Head of Growth at MetalMindTech / Ark Forge.
+Generate a high-conviction, professional 48-Hour commercial outreach package for this Twin Cities operator:
+Company: ${lead.companyName} (${lead.metroLocation})
+Contact: ${lead.decisionMaker}, ${lead.title}
+Trade Category: ${lead.category}
+Pain Point: ${lead.primaryPainPoint}
+Annual Invoiced Volume: $${lead.annualInvoicedEstimate.toLocaleString()}
+Current Accounts Receivable Delay: ${lead.currentARDelayDays} days
+
+Tone: Peer-to-peer, executive, zero marketing fluff, focused on accelerating cash velocity and eliminating AP rejection cycles.
+Offer: 10-Job Closeout Pilot for $750 (0% invoice rejection guarantee, accelerating approval to 48 hours).
+
+Return a JSON object:
+{
+  "subjectLine": "Compelling, direct email subject line",
+  "emailPitch": "Professional 3-paragraph executive email proposal",
+  "linkedInPitch": "Crisp 4-sentence LinkedIn direct message",
+  "phoneScript": "30-second conversational phone script for warm or cold outreach",
+  "roiCalculation": {
+    "daysAccelerated": number,
+    "workingCapitalUnlockedUsd": number,
+    "annualHoursSaved": number
+  }
+}`;
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json"
+          }
+        });
+
+        const parsed = JSON.parse(response.text || '{}');
+        if (parsed.emailPitch && parsed.linkedInPitch) {
+          return {
+            ...parsed,
+            roiCalculation: parsed.roiCalculation || {
+              daysAccelerated,
+              workingCapitalUnlockedUsd: capitalUnlocked,
+              annualHoursSaved: hoursSaved
+            }
+          };
+        }
+      } catch {
+        // fallback
+      }
+    }
+
+    return {
+      subjectLine: `${lead.companyName}: Eliminating Net 30 payment hold-ups on completed field work`,
+      emailPitch: `Hi ${lead.decisionMaker.split(' ')[0]},\n\nMost commercial contractors in the Twin Cities tell us their single biggest cash-flow leak is invoices sitting in customer AP portals for 30–45 days because of missing before/after photos, unverified PO numbers, or unobtained tenant sign-offs.\n\nWe built Ark Forge to solve this before the invoice ever leaves your desk. Our AI closeout workers cross-reference technician notes, photos, and client PO rules into an audit-proof billing packet, guaranteeing zero rejection.\n\nWe are onboarding 5 Twin Cities operators into our 10-Job Pilot ($750 fixed). If we don't accelerate your invoice approval to under 48 hours, the pilot is 100% refunded.\n\nWorth a 7-minute run-through this week?`,
+      linkedInPitch: `${lead.decisionMaker.split(' ')[0]} — noticed your work leading ${lead.companyName}. We're running a pilot with Twin Cities commercial operators to cut invoice approval from 35 days down to 48 hours by auto-verifying proof before AP submission. Would you be open to seeing how the 10-job pilot works?`,
+      phoneScript: `"Hi ${lead.decisionMaker.split(' ')[0]}, this is Valentin with Ark Forge in Minneapolis. The reason for my call: we help commercial mechanical and field operators eliminate the 3-week payment lag caused by customer AP portals rejecting invoices over missing photos or sign-offs. We're testing a 10-job pilot with Twin Cities operators this week—do you have two minutes to see if this fits your current billing workflow?"`,
+      roiCalculation: {
+        daysAccelerated,
+        workingCapitalUnlockedUsd: capitalUnlocked,
+        annualHoursSaved: hoursSaved
+      }
+    };
+  }
+
   private getLocalConversionFallback(workflowDesc: string, category: string): ConversionResult {
     return {
       toolDefinition: {

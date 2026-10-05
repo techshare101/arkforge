@@ -8,6 +8,7 @@ import DoneproofDiamond from './components/DoneproofDiamond';
 import CloseoutWorkspace from './components/CloseoutWorkspace';
 import ConnectorHub from './components/ConnectorHub';
 import ExceptionDesk from './components/ExceptionDesk';
+import OutreachEngine from './components/OutreachEngine';
 import { 
   ArrowRight, 
   Bot, 
@@ -22,6 +23,7 @@ import {
   Play, 
   ShieldCheck, 
   Sparkles, 
+  Target,
   Terminal, 
   TrendingUp, 
   Workflow, 
@@ -30,7 +32,7 @@ import {
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'closeout' | 'exceptions' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'closeout' | 'exceptions' | 'outreach' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready'>('overview');
   const [demoRoleTab, setDemoRoleTab] = useState('Engineering');
 
   const demoRoles = [
@@ -84,6 +86,18 @@ export const App: React.FC = () => {
             >
               <Wrench className="w-3.5 h-3.5 text-purple-600" />
               Phase 2: Exception Desk
+            </button>
+
+            <button
+              onClick={() => setActiveTab('outreach')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeTab === 'outreach'
+                  ? 'bg-emerald-700 text-white shadow ring-2 ring-emerald-300'
+                  : 'text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200'
+              }`}
+            >
+              <Target className="w-3.5 h-3.5 text-emerald-600" />
+              48-Hour Wave
             </button>
 
             <button
@@ -159,6 +173,9 @@ export const App: React.FC = () => {
 
         {/* View: Phase 2 Exception Resolution Desk */}
         {activeTab === 'exceptions' && <ExceptionDesk />}
+
+        {/* View: 48-Hour Commercial Outreach & Pilot Engine */}
+        {activeTab === 'outreach' && <OutreachEngine />}
 
         {/* View: Outcome Verification (Doneproof) */}
         {activeTab === 'diamond' && <DoneproofDiamond />}

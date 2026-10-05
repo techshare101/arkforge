@@ -332,4 +332,28 @@ export interface MCPOperationLog {
   executionDurationMs: number;
 }
 
+// -------------------------------------------------------------
+// 7. 48-HOUR COMMERCIAL FIELD OUTREACH TYPES
+// -------------------------------------------------------------
+export interface CommercialLeadProfile {
+  id: string;
+  companyName: string;
+  category: 'Commercial HVAC' | 'Property Management' | 'Commercial Roofing' | 'Plumbing & Mechanical' | 'HOA & High-Rise';
+  metroLocation: string;
+  decisionMaker: string;
+  title: string;
+  email: string;
+  phone: string;
+  annualInvoicedEstimate: number;
+  currentARDelayDays: number;
+  potentialAnnualSavings: number;
+  primaryPainPoint: string;
+  recommendedOffer: '$750 10-Job Pilot' | '$297 Verified Audit' | '$2,500/mo Retainer';
+  outreachStatus: 'NOT_CONTACTED' | 'PITCH_GENERATED' | 'OUTREACH_SENT' | 'PILOT_AGREED';
+  emailPitch: string;
+  linkedInPitch: string;
+  phoneScript: string;
+}
+
+
 
