@@ -70,8 +70,8 @@ export interface ArkWorker {
   tokensConsumedToday: number;
   reliabilityRate: number;
   recentMission: string;
-  isDiamondAgent?: boolean;
-  isMoneyNowAgent?: boolean;
+  isOutcomeVerificationAgent?: boolean;
+  isDiscoveryAuditAgent?: boolean;
 }
 
 export interface MissionStep {

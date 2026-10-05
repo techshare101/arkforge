@@ -32,12 +32,12 @@ const INITIAL_WORKERS: ArkWorker[] = [
     role: 'Work-Order Proof & Physical Outcome Verification',
     department: 'Trust & Governance',
     status: 'executing',
-    specialization: 'The Diamond Agent: inspects before/after photos, checks EXIF timestamps, verifies GPS boundaries, confirms sensor checklists, and authorizes payment settlement.',
+    specialization: 'Outcome Verification Agent: inspects before/after photos, checks EXIF timestamps, verifies GPS boundaries, confirms sensor checklists, and authorizes payment settlement.',
     hourlyCostEquivalent: 3.40,
     tokensConsumedToday: 512000,
     reliabilityRate: 99.9,
     recentMission: 'Twin Cities Property Maintenance HVAC Doneproof Verification',
-    isDiamondAgent: true
+    isOutcomeVerificationAgent: true
   },
   {
     id: 'worker-discovery-radar',
@@ -47,12 +47,12 @@ const INITIAL_WORKERS: ArkWorker[] = [
     role: 'Prompt Selection & Agent Visibility Benchmark',
     department: 'Market Intelligence',
     status: 'standby',
-    specialization: 'The Money-Now Agent: tests which app/agent gets chosen for user queries, identifies missing public info & booking gaps, produces the $297 Discovery Audit.',
+    specialization: 'Discovery Audit Agent: tests which app/agent gets chosen for user queries, identifies missing public info & booking gaps, produces the $297 Discovery Audit.',
     hourlyCostEquivalent: 2.80,
     tokensConsumedToday: 380000,
     reliabilityRate: 99.5,
     recentMission: 'Minneapolis Local Service Agent Selection Benchmark',
-    isMoneyNowAgent: true
+    isDiscoveryAuditAgent: true
   },
   {
     id: 'worker-susie',
@@ -176,36 +176,36 @@ export const LaborCloud: React.FC = () => {
         <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-[#D8FD49] rounded-full blur-[130px] opacity-15 pointer-events-none"></div>
 
         <div className="relative z-10 max-w-4xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold uppercase tracking-wider text-[#D8FD49] border border-white/10">
-            <Sparkles className="w-3.5 h-3.5" />
-            #1 Strategic Gem · The Agent Runtime Behind ChatGPT
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold uppercase tracking-wider text-cyan-300 border border-white/10">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            Enterprise Execution Backbone · Autonomous Workforce Dispatch
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
-            Ark Labor <span className="text-[#343CED]">Cloud</span>
+            Ark Labor <span className="text-cyan-300">Cloud</span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-300 font-medium leading-relaxed">
-            Don't position Ark merely as another place where agents live. Position it as:{' '}
-            <span className="text-white font-semibold underline decoration-[#D8FD49] decoration-2">
-              The workforce backend that gives ChatGPT access to persistent specialist workers.
+            Positioned as the enterprise execution layer:{' '}
+            <span className="text-white font-semibold underline decoration-cyan-300 decoration-2">
+              The workforce backend that gives ChatGPT and enterprise interfaces access to persistent specialist workers.
             </span>
           </p>
 
           <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-white/10 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-[#D8FD49] font-black text-lg">ChatGPT</span>
-              <span className="text-gray-400">= The Front-End Interface</span>
+              <span className="text-cyan-300 font-black text-lg">ChatGPT / Client</span>
+              <span className="text-gray-400">= Front-End Operational Interface</span>
             </div>
             <div className="text-gray-600">•</div>
             <div className="flex items-center gap-2">
-              <span className="text-[#343CED] font-black text-lg">Ark Labor</span>
-              <span className="text-gray-400">= The Autonomous Workforce Backend</span>
+              <span className="text-blue-400 font-black text-lg">Ark Labor</span>
+              <span className="text-gray-400">= Autonomous Workforce Backbone</span>
             </div>
             <div className="text-gray-600">•</div>
             <div className="flex items-center gap-2">
               <span className="text-emerald-400 font-black text-lg">ProofAI</span>
-              <span className="text-gray-400">= Verifiable Audit & Evidence Layer</span>
+              <span className="text-gray-400">= Verifiable Attestation & Audit Log</span>
             </div>
           </div>
         </div>
@@ -485,14 +485,14 @@ export const LaborCloud: React.FC = () => {
                     <div>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <h3 className="font-bold text-gray-900 text-base">{w.name}</h3>
-                        {w.isDiamondAgent && (
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-cyan-100 text-cyan-800 border border-cyan-300">
-                            💎 THE DIAMOND
+                        {w.isOutcomeVerificationAgent && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-cyan-100 text-cyan-900 border border-cyan-300">
+                            OUTCOME VERIFICATION PROTOCOL
                           </span>
                         )}
-                        {w.isMoneyNowAgent && (
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
-                            💰 MONEY-NOW
+                        {w.isDiscoveryAuditAgent && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-blue-100 text-blue-900 border border-blue-300">
+                            DISCOVERY & VISIBILITY AUDITOR
                           </span>
                         )}
                       </div>

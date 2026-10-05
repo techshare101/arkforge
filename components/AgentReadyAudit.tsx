@@ -97,40 +97,39 @@ export const AgentReadyAudit: React.FC = () => {
         <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-[#343CED] rounded-full blur-[130px] opacity-25 pointer-events-none"></div>
 
         <div className="relative z-10 max-w-4xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold uppercase tracking-wider text-[#D8FD49] border border-white/10">
-            <Sparkles className="w-3.5 h-3.5" />
-            #1 Hidden Gem · The SEO of the Agent Era
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold uppercase tracking-wider text-emerald-300 border border-white/10">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            Industrial Governance Protocol · Agent-Readiness & Visibility Observability
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
-            AgentReady <span className="text-[#D8FD49]">Certification & Monitoring</span>
+            AgentReady <span className="text-emerald-300">Certification & Observability</span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-300 font-medium leading-relaxed">
-            "Today websites obsess over SEO. Tomorrow businesses will care about{' '}
-            <span className="text-white font-semibold">Agent Readiness</span>."
-            Continuous synthetic agent observability answering: <em>Can agents actually use this business safely and transact?</em>
+            Autonomous agent visibility, schema determinism, and interaction reliability.
+            Continuous synthetic probe execution answering: <span className="text-white font-semibold">Can autonomous agents discover, authenticate, and safely execute transactions with your infrastructure?</span>
           </p>
 
           <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-white/10 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-[#D8FD49] font-bold">Free Scan</span>
-              <span className="text-gray-400">→ Lead Magnet</span>
+              <span className="text-emerald-300 font-bold">Diagnostic Scan</span>
+              <span className="text-gray-400">→ Surface Assessment</span>
             </div>
             <div className="text-gray-600">•</div>
             <div className="flex items-center gap-2">
               <span className="text-white font-bold">$297</span>
-              <span className="text-gray-400">→ Verified Audit</span>
+              <span className="text-gray-400">→ Verified Audit & Failure Matrix</span>
             </div>
             <div className="text-gray-600">•</div>
             <div className="flex items-center gap-2">
-              <span className="text-emerald-400 font-bold">$99–$499/mo</span>
-              <span className="text-gray-400">→ Continuous Monitoring</span>
+              <span className="text-cyan-300 font-bold">$99–$499/mo</span>
+              <span className="text-gray-400">→ Continuous Monitoring SLA</span>
             </div>
             <div className="text-gray-600">•</div>
             <div className="flex items-center gap-2">
-              <span className="text-[#343CED] font-bold">$2K–$10K</span>
-              <span className="text-gray-400">→ SchemaForge Remediation</span>
+              <span className="text-blue-400 font-bold">$2K–$10K</span>
+              <span className="text-gray-400">→ SchemaForge Remediation Patch</span>
             </div>
           </div>
         </div>

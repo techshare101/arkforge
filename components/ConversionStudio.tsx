@@ -270,37 +270,37 @@ export const ConversionStudio: React.FC = () => {
         <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-[#343CED] rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
 
         <div className="relative z-10 max-w-4xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold uppercase tracking-wider text-[#D8FD49] border border-white/10">
-            <Sparkles className="w-3.5 h-3.5" />
-            #1 Revenue Gem · The Picks-and-Shovels Play
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold uppercase tracking-wider text-cyan-300 border border-white/10">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            Core Conversion Protocol · SaaS to Autonomous Agent Interface
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
-            Agent-Native <span className="text-[#D8FD49]">Conversion Studio</span>
+            Agent-Native <span className="text-cyan-300">Conversion Studio</span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-300 font-medium leading-relaxed">
-            Take existing SaaS products, clinics, and B2B workflows and transform their highest-value actions into 
-            <span className="text-white font-semibold"> ChatGPT-native tools, structured actions, and permissions layers</span>.
+            Transform high-value enterprise SaaS workflows, clinical booking pipelines, and field-service portals into 
+            <span className="text-white font-semibold"> machine-executable tools, structured agent actions, and delegated permission layers</span>.
           </p>
 
           {/* Value Props Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10 text-sm">
             <div>
-              <div className="text-gray-400 text-xs">Customer Pain</div>
-              <div className="font-bold text-white text-base">8 / 10</div>
+              <div className="text-gray-400 text-xs">Friction Surface</div>
+              <div className="font-bold text-white text-base">Critical Bottleneck</div>
             </div>
             <div>
-              <div className="text-gray-400 text-xs">Build Speed</div>
-              <div className="font-bold text-[#D8FD49] text-base">9 / 10 (Fast)</div>
+              <div className="text-gray-400 text-xs">Deployment Velocity</div>
+              <div className="font-bold text-cyan-300 text-base">Rapid 7-Day Cycle</div>
             </div>
             <div>
-              <div className="text-gray-400 text-xs">Solo Feasibility</div>
-              <div className="font-bold text-white text-base">9 / 10</div>
+              <div className="text-gray-400 text-xs">Execution Mode</div>
+              <div className="font-bold text-white text-base">Fully Autonomous</div>
             </div>
             <div>
-              <div className="text-gray-400 text-xs">Astra Advantage</div>
-              <div className="font-bold text-[#D8FD49] text-base">10 / 10</div>
+              <div className="text-gray-400 text-xs">Architectural Advantage</div>
+              <div className="font-bold text-cyan-300 text-base">10 / 10 Native Spec</div>
             </div>
           </div>
         </div>
@@ -308,51 +308,51 @@ export const ConversionStudio: React.FC = () => {
 
       {/* Commercial Monetization Ladder */}
       <div className="grid md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden group hover:border-[#343CED] transition-all">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#343CED] flex items-center justify-center mb-4 font-bold">
+        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-600 transition-all">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 font-bold">
             01
           </div>
-          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Smallest Sellable MVP</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Phase 1 · Diagnostic Entry Wedge</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">AgentReady Audit</h3>
-          <div className="text-2xl font-black text-[#343CED] mb-3">$297 – $500</div>
+          <div className="text-2xl font-black text-blue-600 mb-3">$297 – $500</div>
           <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-            "Can ChatGPT discover, understand, and safely operate your product?" Run 20–50 synthetic agent tasks and expose failure points.
+            "Can autonomous agents discover, understand, and safely operate your product?" Run 20–50 synthetic agent tasks and expose failure points.
           </p>
           <div className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 24-Hour Turnaround Deliverable
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 border-2 border-[#343CED] shadow-md relative overflow-hidden">
-          <div className="absolute top-3 right-3 px-2 py-0.5 bg-[#D8FD49] text-[#1a1a1a] text-[11px] font-black uppercase rounded-full">
-            Core Service
+        <div className="bg-white rounded-2xl p-6 border-2 border-blue-600 shadow-md relative overflow-hidden">
+          <div className="absolute top-3 right-3 px-2 py-0.5 bg-cyan-100 text-cyan-900 text-[11px] font-black uppercase rounded-full">
+            Phase 2 Protocol
           </div>
-          <div className="w-10 h-10 rounded-xl bg-[#343CED] text-white flex items-center justify-center mb-4 font-bold">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center mb-4 font-bold">
             02
           </div>
-          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Transformation Implementation</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Phase 2 · Production Implementation</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">AgentReady Conversion</h3>
-          <div className="text-2xl font-black text-[#343CED] mb-3">$2,500 – $10,000</div>
+          <div className="text-2xl font-black text-blue-600 mb-3">$2,500 – $10,000</div>
           <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-            Build the machine-facing layer: authentication, tool definitions, structured actions, ChatGPT OpenAPI manifest, confirmation triggers, and payments.
+            Deploy the machine-facing operational layer: authentication, tool definitions, structured actions, OpenAPI 3.1 manifest, confirmation triggers, and payments.
           </p>
           <div className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Deployed to Production in 7 Days
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden group hover:border-[#343CED] transition-all">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 font-bold">
+        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-600 transition-all">
+          <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-4 font-bold">
             03
           </div>
-          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">High-Margin Recurring</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Phase 3 · Continuous Operations & SLA</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">Agent Operations (AgentOps)</h3>
           <div className="text-2xl font-black text-emerald-600 mb-3">$299 – $1,500 <span className="text-xs text-gray-500 font-normal">/ month</span></div>
           <p className="text-sm text-gray-600 mb-4 leading-relaxed">
             Continuous synthetic monitoring, broken action repair, schema updates, agent analytics, rate limit protection, and agent compliance reporting.
           </p>
           <div className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Pure High-Retention MRR
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> High-Retention Industrial SLA
           </div>
         </div>
       </div>

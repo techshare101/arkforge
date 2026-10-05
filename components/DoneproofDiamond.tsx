@@ -4,11 +4,12 @@ import {
   AlertTriangle, 
   ArrowRight, 
   BadgeCheck, 
+  Building2, 
   Camera, 
   Check, 
   CheckCircle2, 
   Clock, 
-  Coins, 
+  Compass, 
   Copy, 
   Cpu, 
   DollarSign, 
@@ -18,14 +19,15 @@ import {
   FileSearch, 
   FileText, 
   Fingerprint, 
-  Gem, 
   Layers, 
+  Lock, 
   MapPin, 
   QrCode, 
   RefreshCw, 
   ShieldAlert, 
   ShieldCheck, 
   Sparkles, 
+  Terminal, 
   TrendingUp, 
   UserCheck, 
   Wrench, 
@@ -179,11 +181,11 @@ const INITIAL_CLOSEOUT_PACKETS: CloseoutPacket[] = [
     poNumber: 'PO-2026-98124',
     workOrderNumber: 'WO-44810-RTU',
     clientRequirements: [
-      'Customer Purchase Order PO-2026-98124 on face of invoice',
+      'Customer Purchase Order PO-2026-98124 printed on invoice header',
       'Before & after photos of 25-ton RTU compressor replacement',
       'Old compressor serial nameplate legible photo',
       'Refrigerant recovery log (EPA 608 certified tag)',
-      'Signed facilities manager sign-off slip'
+      'Signed facilities manager completion slip'
     ],
     techNotes: 'Replaced failed Copeland Scroll compressor on RTU #4. Recovered 18 lbs R-410A. Pulled vacuum to 380 microns. Recharged to factory spec (21.5 lbs). Running test passed with 12°F superheat.',
     photosUploadedCount: 4,
@@ -242,23 +244,23 @@ const INITIAL_EXCEPTIONS: ExceptionDeskIncident[] = [
 ];
 
 export const DoneproofDiamond: React.FC = () => {
-  const [radarPillar, setRadarPillar] = useState<'diamond' | 'gold' | 'silver'>('diamond');
+  const [operationalPillar, setOperationalPillar] = useState<'acceptance' | 'closeout' | 'exceptions'>('acceptance');
   
-  // Diamond state
+  // Acceptance Engine state
   const [selectedWO, setSelectedWO] = useState<WorkOrderProofRecord>(SAMPLE_WORK_ORDERS[0]);
   const [activeChainStep, setActiveChainStep] = useState<'trigger' | 'work' | 'evidence' | 'verification' | 'settlement'>('evidence');
   const [isVerifying, setIsVerifying] = useState(false);
   const [settled, setSettled] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Gold state
-  const [closeoutPackets, setCloseoutPackets] = useState<CloseoutPacket[]>(INITIAL_CLOSEOUT_PACKETS);
+  // Closeout Packet state
+  const [closeoutPackets] = useState<CloseoutPacket[]>(INITIAL_CLOSEOUT_PACKETS);
   const [selectedPacket, setSelectedPacket] = useState<CloseoutPacket>(INITIAL_CLOSEOUT_PACKETS[0]);
   const [isAssembling, setIsAssembling] = useState(false);
   const [packetGenerated, setPacketGenerated] = useState(false);
 
-  // Silver state
-  const [exceptions, setExceptions] = useState<ExceptionDeskIncident[]>(INITIAL_EXCEPTIONS);
+  // Exception Desk state
+  const [exceptions] = useState<ExceptionDeskIncident[]>(INITIAL_EXCEPTIONS);
   const [resolvedIds, setResolvedIds] = useState<string[]>([]);
 
   const handleRunVerification = async () => {
@@ -321,102 +323,104 @@ export const DoneproofDiamond: React.FC = () => {
 
   return (
     <div className="space-y-12">
-      {/* Top Astra Opportunity Radar Header */}
-      <div className="bg-[#1a1a1a] rounded-[32px] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl border border-gray-800">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400 rounded-full blur-[140px] opacity-20 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-amber-400 rounded-full blur-[130px] opacity-15 pointer-events-none"></div>
+      {/* Executive Industrial Banner */}
+      <div className="bg-[#12161f] rounded-[32px] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl border border-gray-800">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500 rounded-full blur-[140px] opacity-15 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-blue-600 rounded-full blur-[130px] opacity-15 pointer-events-none"></div>
 
         <div className="relative z-10 max-w-4xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/20 text-xs font-bold uppercase tracking-wider text-cyan-300 border border-cyan-500/30">
-            <Sparkles className="w-3.5 h-3.5" />
-            Astra Opportunity Radar · The 3 Enduring Winners
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold uppercase tracking-wider text-cyan-300 border border-white/10">
+            <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+            Industrial Agent Outcome Framework · Enterprise Infrastructure
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
-            Job Acceptance <span className="text-cyan-300">& Closeout Engine</span>
+            Outcome Verification <br />
+            <span className="text-cyan-300">& Acceptance Infrastructure</span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-300 font-medium leading-relaxed">
-            The strategic roadmap: <span className="text-amber-300 font-bold">Gold (Closeout Service)</span> generates immediate revenue + data + customer knowledge, which feeds directly into{' '}
-            <span className="text-cyan-300 font-bold">Diamond (Job Acceptance Engine)</span>.
+            The mission layer between <span className="text-white font-semibold">“job completed in the field”</span> and{' '}
+            <span className="text-cyan-300 font-semibold">“job accepted for financial settlement.”</span> Accumulating customer acceptance rules, exception diagnostics, and verifiable cryptographic handoffs.
           </p>
 
-          {/* Radar Switcher Pills */}
+          {/* Operational Pillar Switcher */}
           <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
             <button
-              onClick={() => setRadarPillar('diamond')}
+              onClick={() => setOperationalPillar('acceptance')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                radarPillar === 'diamond'
+                operationalPillar === 'acceptance'
                   ? 'bg-cyan-500 text-gray-950 shadow-lg'
                   : 'bg-white/10 text-gray-300 hover:bg-white/20'
               }`}
             >
-              <Gem className="w-4 h-4" />
-              💎 DIAMOND: Job Acceptance Engine (Infrastructure)
+              <FileCheck className="w-4 h-4" />
+              Outcome Acceptance Engine (Core Infrastructure)
             </button>
 
             <button
-              onClick={() => setRadarPillar('gold')}
+              onClick={() => setOperationalPillar('closeout')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                radarPillar === 'gold'
-                  ? 'bg-amber-400 text-gray-950 shadow-lg'
+                operationalPillar === 'closeout'
+                  ? 'bg-blue-600 text-white shadow-lg'
                   : 'bg-white/10 text-gray-300 hover:bg-white/20'
               }`}
             >
-              <Coins className="w-4 h-4" />
-              🥇 GOLD: Closeout & Invoice-Support ($750 Pilot)
+              <FileText className="w-4 h-4" />
+              Autonomous Closeout & Billing Packet Service
             </button>
 
             <button
-              onClick={() => setRadarPillar('silver')}
+              onClick={() => setOperationalPillar('exceptions')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                radarPillar === 'silver'
-                  ? 'bg-gray-200 text-gray-950 shadow-lg'
+                operationalPillar === 'exceptions'
+                  ? 'bg-slate-700 text-white shadow-lg'
                   : 'bg-white/10 text-gray-300 hover:bg-white/20'
               }`}
             >
               <Cpu className="w-4 h-4" />
-              🥈 SILVER: Automation Maintenance Desk
+              Industrial Exception Desk & Continuous Continuity
             </button>
           </div>
         </div>
       </div>
 
-      {/* FLYWHEEL CONNECTION BANNER */}
-      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white rounded-2xl p-6 border border-gray-700 flex flex-col md:flex-row items-center justify-between gap-4">
+      {/* Industrial Mission Telemetry Bar */}
+      <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-400 text-gray-950 flex items-center justify-center font-bold text-xl shrink-0">
-            🥇➔💎
+          <div className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xl shrink-0">
+            <Terminal className="w-6 h-6 text-cyan-400" />
           </div>
           <div>
-            <h4 className="font-bold text-sm text-amber-300">The Connective Flywheel: Gold ➔ Diamond</h4>
-            <p className="text-xs text-gray-300 mt-0.5">
-              Sell the outcome first (AI Closeout Service @ $750 pilot) ➔ accumulate customer acceptance rules & exception workflows ➔ build the permanent infrastructure moat (Job Acceptance Engine).
+            <h4 className="font-bold text-sm text-gray-900">Mission Pipeline Architecture</h4>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Work Completed ➔ Multimodal Evidence Extraction ➔ ProofAI Verification ➔ Acceptance Rules ➔ Financial Settlement Release.
             </p>
           </div>
         </div>
         <div className="text-right shrink-0">
-          <span className="text-xs font-mono text-[#D8FD49] font-bold">10 Jobs Pilot ➔ $1,000/mo MRR</span>
+          <span className="text-xs font-mono text-cyan-700 bg-cyan-50 px-3 py-1.5 rounded-lg border border-cyan-200 font-bold">
+            Zero-Dispute SLA Standard
+          </span>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 1. 💎 DIAMOND VIEW: JOB ACCEPTANCE ENGINE                                */}
+      {/* 1. OUTCOME ACCEPTANCE ENGINE (Core Infrastructure)                       */}
       {/* ========================================================================= */}
-      {radarPillar === 'diamond' && (
+      {operationalPillar === 'acceptance' && (
         <div className="space-y-8 animate-fadeIn">
-          {/* Section summary */}
           <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 font-mono">
-                  THE INFRASTRUCTURE MOAT · $$$$$ POTENTIAL
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-700 font-mono">
+                  INDUSTRIAL GOVERNANCE & SETTLEMENT PROTOCOL
                 </span>
                 <h2 className="text-2xl font-bold text-gray-900 mt-1">
-                  Job Acceptance Engine
+                  Autonomous Acceptance Engine
                 </h2>
                 <p className="text-xs text-gray-500">
-                  Build the layer between <strong>“job finished”</strong> and <strong>“job accepted for payment.”</strong>
+                  Inspects technician work orders, matches customer specifications, detects discrepancies, and authorizes settlement.
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -429,7 +433,7 @@ export const DoneproofDiamond: React.FC = () => {
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                       selectedWO.id === wo.id
-                        ? 'bg-gray-900 text-white border-gray-900'
+                        ? 'bg-slate-900 text-white border-slate-900'
                         : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
                     }`}
                   >
@@ -442,18 +446,18 @@ export const DoneproofDiamond: React.FC = () => {
             {/* The 5-Link Chain */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
               {[
-                { key: 'trigger', step: '01', title: '1. Trigger', sub: 'Ticket / Request' },
-                { key: 'work', step: '02', title: '2. Work', sub: 'Technician Dispatched' },
-                { key: 'evidence', step: '03', title: '3. Evidence', sub: 'Photos, Telemetry & GPS' },
-                { key: 'verification', step: '04', title: '4. Verification', sub: 'ProofAI Oracle Attest' },
-                { key: 'settlement', step: '05', title: '5. Settlement', sub: 'Payment Release' },
+                { key: 'trigger', step: '01', title: '1. Incident Trigger', sub: 'ERP / Portal Work Order' },
+                { key: 'work', step: '02', title: '2. Field Dispatch', sub: 'Certified Execution' },
+                { key: 'evidence', step: '03', title: '3. Evidence Ingestion', sub: 'EXIF, Sensor, Geotag' },
+                { key: 'verification', step: '04', title: '4. Rule Acceptance', sub: 'ProofAI Attestation' },
+                { key: 'settlement', step: '05', title: '5. Settlement Release', sub: 'Contractor Payment' },
               ].map((s) => (
                 <button
                   key={s.key}
                   onClick={() => setActiveChainStep(s.key as any)}
                   className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between ${
                     activeChainStep === s.key
-                      ? 'border-cyan-500 ring-2 ring-cyan-100 bg-cyan-50/30 shadow-md'
+                      ? 'border-cyan-600 ring-2 ring-cyan-100 bg-cyan-50/30 shadow-md'
                       : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
                   }`}
                 >
@@ -462,7 +466,7 @@ export const DoneproofDiamond: React.FC = () => {
                   <div className="text-[11px] text-gray-500 mt-0.5">{s.sub}</div>
                   <div className="mt-3 pt-2 border-t border-gray-200 flex items-center justify-between text-[11px]">
                     <span className="text-emerald-600 font-bold flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Captured
+                      <CheckCircle2 className="w-3 h-3" /> Validated
                     </span>
                   </div>
                 </button>
@@ -476,11 +480,11 @@ export const DoneproofDiamond: React.FC = () => {
                   <h4 className="font-bold text-lg text-gray-900">{selectedWO.title}</h4>
                   <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
                     <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                    {selectedWO.propertyLocation} • Contractor: <strong>{selectedWO.assignedContractor}</strong>
+                    {selectedWO.propertyLocation} • Authorized Vendor: <strong>{selectedWO.assignedContractor}</strong>
                   </p>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-gray-400">Invoice Amount</div>
+                  <div className="text-xs text-gray-400">Authorized Valuation</div>
                   <div className="text-2xl font-black text-gray-900">${selectedWO.invoiceAmount.toFixed(2)}</div>
                 </div>
               </div>
@@ -489,13 +493,13 @@ export const DoneproofDiamond: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    <span>🔴 Before Work (Damaged / Replaced Component)</span>
+                    <span>Pre-Maintenance Condition (Fault State)</span>
                     <span className="font-mono text-gray-400">11:45 AM</span>
                   </div>
                   <div className="relative rounded-2xl overflow-hidden border border-gray-300 aspect-[4/3] bg-gray-100 shadow-inner">
                     <img
                       src={selectedWO.chain.evidence.beforePhoto}
-                      alt="Before Maintenance"
+                      alt="Pre-Maintenance"
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute bottom-3 left-3 bg-black/70 text-white text-[11px] px-2.5 py-1 rounded-md font-mono backdrop-blur-sm">
@@ -506,17 +510,17 @@ export const DoneproofDiamond: React.FC = () => {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-emerald-600 uppercase tracking-wider">
-                    <span>🟢 After Work (OEM Taco 007-F5 Installed & Tested)</span>
+                    <span>Post-Maintenance State (OEM Taco 007-F5 Installed)</span>
                     <span className="font-mono text-emerald-600">01:05 PM</span>
                   </div>
                   <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500 aspect-[4/3] bg-gray-100 shadow-md">
                     <img
                       src={selectedWO.chain.evidence.afterPhoto}
-                      alt="After Maintenance"
+                      alt="Post-Maintenance"
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-3 right-3 bg-emerald-500 text-white text-xs px-2.5 py-1 rounded-full font-bold shadow flex items-center gap-1">
-                      <BadgeCheck className="w-3.5 h-3.5" /> Installed & Tested
+                      <BadgeCheck className="w-3.5 h-3.5" /> Acceptance Criteria Satisfied
                     </div>
                     <div className="absolute bottom-3 left-3 bg-black/70 text-white text-[11px] px-2.5 py-1 rounded-md font-mono backdrop-blur-sm">
                       SHA-256: 0x4f2b...99ee
@@ -528,26 +532,26 @@ export const DoneproofDiamond: React.FC = () => {
               {/* Action bar */}
               <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
-                  <h4 className="font-bold text-sm text-gray-900">ProofAI Acceptance Oracle Attestation</h4>
+                  <h4 className="font-bold text-sm text-gray-900">Doneproof™ Attestation Oracle</h4>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    Merkle root: <code className="text-cyan-700 font-bold">{selectedWO.chain.verification.merkleProofHash.substring(0, 24)}...</code>
+                    Merkle Verification: <code className="text-cyan-800 font-bold">{selectedWO.chain.verification.merkleProofHash.substring(0, 24)}...</code>
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleRunVerification}
                     disabled={isVerifying}
-                    className="bg-[#1a1a1a] hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all disabled:opacity-50"
+                    className="bg-[#12161f] hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all disabled:opacity-50"
                   >
-                    {isVerifying ? <RefreshCw className="w-4 h-4 animate-spin text-cyan-300" /> : <Gem className="w-4 h-4 text-cyan-300" />}
-                    {isVerifying ? 'Verifying Evidence...' : 'Re-verify Evidence'}
+                    {isVerifying ? <RefreshCw className="w-4 h-4 animate-spin text-cyan-300" /> : <ShieldCheck className="w-4 h-4 text-cyan-300" />}
+                    {isVerifying ? 'Running Attestation...' : 'Execute Attestation Engine'}
                   </button>
                   <button
                     onClick={handleApproveSettlement}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    Accept Job & Release ${selectedWO.invoiceAmount.toFixed(2)}
+                    Accept Outcome & Release ${selectedWO.invoiceAmount.toFixed(2)}
                   </button>
                 </div>
               </div>
@@ -557,32 +561,31 @@ export const DoneproofDiamond: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* 2. 🥇 GOLD VIEW: AI CLOSEOUT & INVOICE-SUPPORT SERVICE                  */}
+      {/* 2. AUTONOMOUS CLOSEOUT & BILLING PACKET SERVICE                         */}
       {/* ========================================================================= */}
-      {radarPillar === 'gold' && (
+      {operationalPillar === 'closeout' && (
         <div className="space-y-8 animate-fadeIn">
-          {/* Revenue wedge banner */}
-          <div className="bg-white rounded-3xl p-8 border-2 border-amber-400 shadow-xl space-y-6">
+          <div className="bg-white rounded-3xl p-8 border-2 border-blue-500 shadow-xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-600 font-mono">
-                  FASTEST PATH TO REVENUE · $$$$ POTENTIAL · SELL THIS FIRST
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-700 font-mono">
+                  FIELD CLOSEOUT AUTOMATION & BILLING VALIDATION
                 </span>
                 <h2 className="text-2xl font-bold text-gray-900 mt-1">
-                  AI Closeout & Invoice-Support Service
+                  Closeout & Invoice-Support Orchestrator
                 </h2>
                 <p className="text-xs text-gray-500">
-                  "Don't start with software. Sell the outcome first: A contractor sends completed jobs; AI workers assemble the billing packet."
+                  Assembles field work orders, technician logs, PO numbers, and client compliance criteria into verified, audit-proof billing packets.
                 </p>
               </div>
-              <div className="bg-amber-50 border border-amber-300 text-amber-900 px-4 py-2 rounded-xl text-xs font-bold">
-                Commercial Wedge: 10 Jobs ➔ $750 Pilot ➔ ~$1,000/mo
+              <div className="bg-blue-50 border border-blue-200 text-blue-900 px-4 py-2 rounded-xl text-xs font-bold">
+                Enterprise Pilot: 10 Deployments ➔ $750 / Month SLA
               </div>
             </div>
 
             {/* Packet Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-400 mr-2">Sample Contractor Jobs:</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-400 mr-2">Field Missions:</span>
               {closeoutPackets.map((pkt) => (
                 <button
                   key={pkt.id}
@@ -592,22 +595,22 @@ export const DoneproofDiamond: React.FC = () => {
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                     selectedPacket.id === pkt.id
-                      ? 'bg-amber-400 text-gray-950 border-amber-400 shadow'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow'
                       : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
                   }`}
                 >
-                  {pkt.workOrderNumber} ({pkt.billingReadinessStatus === 'BILLING_READY' ? '🟢 Ready' : '🔴 Missing Items'})
+                  {pkt.workOrderNumber} ({pkt.billingReadinessStatus === 'BILLING_READY' ? 'Verified Ready' : 'Compliance Exception'})
                 </button>
               ))}
             </div>
 
             {/* Live Packet Breakdown */}
             <div className="grid md:grid-cols-2 gap-8 pt-2">
-              {/* Left Column: Requirements & Tech Notes */}
+              {/* Requirements & Tech Notes */}
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase text-gray-500">Customer Requirements Checklist</span>
+                    <span className="text-xs font-bold uppercase text-gray-500">Client Compliance Specifications</span>
                     <span className="text-xs font-mono text-gray-400">{selectedPacket.clientName}</span>
                   </div>
                   <ul className="space-y-2 text-xs">
@@ -621,18 +624,18 @@ export const DoneproofDiamond: React.FC = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 space-y-2">
-                  <span className="text-xs font-bold uppercase text-gray-500">Technician Field Notes</span>
+                  <span className="text-xs font-bold uppercase text-gray-500">Technician Telemetry & Field Log</span>
                   <p className="text-xs text-gray-700 leading-relaxed italic bg-white p-3 rounded-xl border border-gray-200">
                     "{selectedPacket.techNotes}"
                   </p>
                   <div className="flex items-center justify-between text-[11px] text-gray-500 pt-1">
-                    <span>Photos attached: <strong>{selectedPacket.photosUploadedCount} images</strong></span>
-                    <span>PO Status: <strong className="text-gray-900">{selectedPacket.poNumber}</strong></span>
+                    <span>Multimodal Assets: <strong>{selectedPacket.photosUploadedCount} images</strong></span>
+                    <span>PO Cross-Reference: <strong className="text-gray-900">{selectedPacket.poNumber}</strong></span>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: AI Assembly & Missing Evidence Engine */}
+              {/* Compliance & Assembly Engine */}
               <div className="space-y-4">
                 <div className={`rounded-2xl p-6 border transition-all ${
                   selectedPacket.billingReadinessStatus === 'BILLING_READY'
@@ -640,20 +643,20 @@ export const DoneproofDiamond: React.FC = () => {
                     : 'bg-amber-50/60 border-amber-300'
                 }`}>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700">Billing-Readiness Audit</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700">Billing Integrity Audit</span>
                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                       selectedPacket.billingReadinessStatus === 'BILLING_READY'
                         ? 'bg-emerald-200 text-emerald-900'
                         : 'bg-amber-200 text-amber-900'
                     }`}>
-                      {selectedPacket.billingReadinessStatus === 'BILLING_READY' ? 'Ready for Customer Invoicing' : 'Missing Critical Evidence'}
+                      {selectedPacket.billingReadinessStatus === 'BILLING_READY' ? 'Compliant for Submission' : 'Missing Requisite Evidence'}
                     </span>
                   </div>
 
                   {selectedPacket.missingEvidence.length > 0 ? (
                     <div className="space-y-2 mb-4">
                       <div className="text-xs font-bold text-red-600 flex items-center gap-1.5">
-                        <AlertTriangle className="w-4 h-4" /> Detected Missing Closeout Items:
+                        <AlertTriangle className="w-4 h-4" /> Detected Compliance Deficiencies:
                       </div>
                       <div className="space-y-1.5">
                         {selectedPacket.missingEvidence.map((err, idx) => (
@@ -663,7 +666,7 @@ export const DoneproofDiamond: React.FC = () => {
                         ))}
                       </div>
                       <p className="text-[11px] text-gray-500 mt-2">
-                        Submitting this invoice now would cause a 21-day payment rejection loop from Cushman & Wakefield.
+                        Submitting this packet without remediation triggers a 21-day accounts payable rejection cycle.
                       </p>
                     </div>
                   ) : (
@@ -672,38 +675,38 @@ export const DoneproofDiamond: React.FC = () => {
                         <CheckCircle2 className="w-4 h-4" /> All Customer Acceptance Criteria Verified
                       </div>
                       <p className="text-xs text-gray-600">
-                        PO-2026-98124 verified in client portal. High-vacuum micron log and EPA 608 recovery tag match line items.
+                        PO-2026-98124 validated against enterprise ERP database. Vacuum gauge reading and certified recovery logs match line item entries.
                       </p>
                     </div>
                   )}
 
                   <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
                     <div>
-                      <div className="text-xs text-gray-400">Invoice Total</div>
+                      <div className="text-xs text-gray-400">Total Valuation</div>
                       <div className="text-2xl font-black text-gray-900">${selectedPacket.invoiceAmount.toFixed(2)}</div>
                     </div>
                     <button
                       onClick={handleAssembleCloseout}
                       disabled={isAssembling}
-                      className="bg-amber-400 hover:bg-amber-500 text-gray-950 font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow transition-all"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow transition-all"
                     >
                       {isAssembling ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-                      {isAssembling ? 'Assembling Packet...' : 'Generate Billing Packet'}
+                      {isAssembling ? 'Validating Packet...' : 'Compile Billing-Ready Packet'}
                     </button>
                   </div>
                 </div>
 
                 {packetGenerated && (
-                  <div className="bg-gray-900 text-white p-5 rounded-2xl space-y-3 font-mono text-xs animate-fadeIn">
-                    <div className="flex items-center justify-between text-emerald-400 pb-2 border-b border-gray-800">
-                      <span>PACKET ASSEMBLED (PDF + JSON)</span>
-                      <span>Ready for Client Submission</span>
+                  <div className="bg-[#12161f] text-white p-5 rounded-2xl space-y-3 font-mono text-xs animate-fadeIn">
+                    <div className="flex items-center justify-between text-cyan-300 pb-2 border-b border-gray-800">
+                      <span>AUDIT PACKET ASSEMBLED (PDF / JSON SCHEMA)</span>
+                      <span>Verified for ERP Ingestion</span>
                     </div>
                     <div className="text-gray-300">
-                      File: <strong className="text-white">CLOSEOUT_{selectedPacket.workOrderNumber}_VERIFIED.pdf</strong>
+                      Artifact: <strong className="text-white">CLOSEOUT_{selectedPacket.workOrderNumber}_VERIFIED.pdf</strong>
                     </div>
                     <div className="text-gray-400 text-[11px]">
-                      Includes: Customer PO #, signed sign-off slip, before/after photos with geofence, and technician notes.
+                      Package bundle includes: Verified PO, digital sign-off certificate, timestamped geofenced media, and mechanical logs.
                     </div>
                   </div>
                 )}
@@ -714,33 +717,32 @@ export const DoneproofDiamond: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* 3. 🥈 SILVER VIEW: AUTOMATION MAINTENANCE / EXCEPTION DESK               */}
+      {/* 3. INDUSTRIAL EXCEPTION DESK & CONTINUITY DESK                           */}
       {/* ========================================================================= */}
-      {radarPillar === 'silver' && (
+      {operationalPillar === 'exceptions' && (
         <div className="space-y-8 animate-fadeIn">
-          {/* Silver Desk Banner */}
           <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-purple-600 font-mono">
-                  HIGH-MARGIN RECURRING MRR · $$$ POTENTIAL
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700 font-mono">
+                  INDUSTRIAL PIPELINE CONTINUITY & SELF-HEALING
                 </span>
                 <h2 className="text-2xl font-bold text-gray-900 mt-1">
-                  AI Operations Maintenance & Exception Desk
+                  Autonomous Exception Resolution Desk
                 </h2>
                 <p className="text-xs text-gray-500">
-                  "Businesses pay once for automation, but the recurring revenue is maintaining it when reality breaks the automation."
+                  Continuous workflow observability when real-world operational breakdowns occur. Agents investigate causes and prepare executable fixes.
                 </p>
               </div>
-              <div className="text-xs font-mono bg-purple-50 text-purple-700 px-3 py-1.5 rounded-xl font-bold border border-purple-200">
-                Watching: ERP → Work Order → Docs → Accounting → Approval
+              <div className="text-xs font-mono bg-slate-100 text-slate-800 px-3 py-1.5 rounded-xl font-bold border border-slate-200">
+                Monitoring Pipeline: ERP ➔ Work Order ➔ Docs ➔ Accounting ➔ Approval
               </div>
             </div>
 
             {/* Exception Incident Stream */}
             <div className="space-y-4">
               <div className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                Active Workflow Breakdown Incidents (Real-Time Exception Queue)
+                Active Operational Breakdown Incidents (Real-Time Remediation Queue)
               </div>
 
               <div className="space-y-3">
@@ -752,7 +754,7 @@ export const DoneproofDiamond: React.FC = () => {
                       className={`p-6 rounded-2xl border transition-all ${
                         isResolved
                           ? 'bg-emerald-50/40 border-emerald-300 opacity-80'
-                          : 'bg-white border-gray-200 hover:border-purple-300 shadow-sm'
+                          : 'bg-white border-gray-200 hover:border-slate-400 shadow-sm'
                       }`}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-100 mb-3">
@@ -760,7 +762,7 @@ export const DoneproofDiamond: React.FC = () => {
                           <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                             isResolved ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
                           }`}>
-                            {isResolved ? 'RESOLVED & PATCHED' : exc.failedStep}
+                            {isResolved ? 'REMEDIATED & COMMITTED' : exc.failedStep}
                           </span>
                           <span className="text-xs font-mono text-gray-400">{exc.timeAgo}</span>
                         </div>
@@ -769,15 +771,15 @@ export const DoneproofDiamond: React.FC = () => {
 
                       <div className="grid md:grid-cols-2 gap-4 text-xs">
                         <div>
-                          <div className="font-bold text-red-600 mb-1">What Broke in the Real World:</div>
+                          <div className="font-bold text-red-600 mb-1">Operational Anomaly Detected:</div>
                           <p className="text-gray-700 bg-red-50/50 p-3 rounded-xl border border-red-200">
                             {exc.detectedProblem}
                           </p>
                         </div>
 
                         <div>
-                          <div className="font-bold text-purple-600 mb-1">Agent Autonomous Investigation:</div>
-                          <p className="text-gray-700 bg-purple-50/50 p-3 rounded-xl border border-purple-200">
+                          <div className="font-bold text-blue-700 mb-1">Autonomous Agent Diagnostic:</div>
+                          <p className="text-gray-700 bg-blue-50/50 p-3 rounded-xl border border-blue-200">
                             {exc.agentInvestigation}
                           </p>
                         </div>
@@ -785,19 +787,19 @@ export const DoneproofDiamond: React.FC = () => {
 
                       <div className="mt-4 pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="text-xs text-gray-600">
-                          <strong>Prepared Resolution: </strong> {exc.preparedResolution}
+                          <strong>Prepared Remediation Action: </strong> {exc.preparedResolution}
                         </div>
                         {!isResolved ? (
                           <button
                             onClick={() => handleResolveException(exc.id)}
-                            className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all whitespace-nowrap"
+                            className="bg-slate-900 hover:bg-black text-white px-5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all whitespace-nowrap"
                           >
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            Confirm Agent Fix ➔
+                            <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
+                            Commit Agent Fix ➔
                           </button>
                         ) : (
                           <span className="text-emerald-600 font-bold text-xs flex items-center gap-1">
-                            <CheckCircle2 className="w-4 h-4" /> Workflow Resumed in ERP
+                            <CheckCircle2 className="w-4 h-4" /> Pipeline Restored in ERP
                           </span>
                         )}
                       </div>
