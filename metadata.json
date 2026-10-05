@@ -1,0 +1,8 @@
+{
+  "name": "Ark Forge Work AI",
+  "description": "MetalMindTech Agent Infrastructure: Agent-Native Conversion Studio, Ark Labor Cloud runtime behind ChatGPT, and AgentReady Certification + Monitoring suite.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
