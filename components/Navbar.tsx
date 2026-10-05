@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Cpu, Terminal, Layers, FileCheck, CheckCircle2 } from 'lucide-react';
 
 interface NavbarProps {
-  currentTab: 'overview' | 'closeout' | 'diamond' | 'conversion' | 'labor' | 'agentready';
-  onSelectTab: (tab: 'overview' | 'closeout' | 'diamond' | 'conversion' | 'labor' | 'agentready') => void;
+  currentTab: 'overview' | 'closeout' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready';
+  onSelectTab: (tab: 'overview' | 'closeout' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
@@ -84,6 +84,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
                 Doneproof Oracle
+              </button>
+
+              <button
+                onClick={() => onSelectTab('connectors')}
+                className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
+                  currentTab === 'connectors'
+                    ? 'bg-cyan-800 text-white shadow-sm ring-2 ring-cyan-300'
+                    : 'text-slate-700 hover:text-cyan-700 hover:bg-cyan-50/60'
+                }`}
+              >
+                <Terminal className="w-3.5 h-3.5 text-cyan-500" />
+                MCP Hub (5 Repos)
               </button>
 
               <button

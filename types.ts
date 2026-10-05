@@ -282,3 +282,46 @@ export interface ExceptionDeskIncident {
   timeAgo: string;
 }
 
+// -------------------------------------------------------------
+// 6. TRUEFORGE MCP & EXTERNAL CONNECTOR HUB TYPES
+// -------------------------------------------------------------
+export interface MCPToolDefinition {
+  name: string;
+  description: string;
+  parameters: Record<string, any>;
+  returns: string;
+  samplePayload: Record<string, any>;
+}
+
+export interface MCPServiceConnector {
+  id: string;
+  name: string;
+  slug: 'susie' | 'ark-labor' | 'proofai' | 'agentready' | 'sentinel';
+  repoUrl: string;
+  version: string;
+  status: 'ONLINE' | 'ACTIVE_MESH' | 'STANDBY';
+  protocol: 'Model Context Protocol 1.0 (JSON-RPC)' | 'REST OpenAPI 3.1';
+  role: string;
+  description: string;
+  endpoint: string;
+  healthMetrics: {
+    uptime: number;
+    latencyMs: number;
+    callsToday: number;
+    successRate: number;
+  };
+  tools: MCPToolDefinition[];
+}
+
+export interface MCPOperationLog {
+  id: string;
+  serviceSlug: string;
+  toolName: string;
+  request: Record<string, any>;
+  response: Record<string, any>;
+  timestamp: string;
+  status: 'SUCCESS' | 'ERROR';
+  executionDurationMs: number;
+}
+
+

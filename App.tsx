@@ -6,6 +6,7 @@ import LaborCloud from './components/LaborCloud';
 import AgentReadyAudit from './components/AgentReadyAudit';
 import DoneproofDiamond from './components/DoneproofDiamond';
 import CloseoutWorkspace from './components/CloseoutWorkspace';
+import ConnectorHub from './components/ConnectorHub';
 import { 
   ArrowRight, 
   Bot, 
@@ -27,7 +28,7 @@ import {
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'closeout' | 'conversion' | 'labor' | 'agentready' | 'diamond'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'closeout' | 'diamond' | 'connectors' | 'conversion' | 'labor' | 'agentready'>('overview');
   const [demoRoleTab, setDemoRoleTab] = useState('Engineering');
 
   const demoRoles = [
@@ -84,6 +85,18 @@ export const App: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('connectors')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeTab === 'connectors'
+                  ? 'bg-cyan-800 text-white shadow ring-2 ring-cyan-300'
+                  : 'text-slate-700 hover:text-cyan-700 hover:bg-cyan-50/60'
+              }`}
+            >
+              <Terminal className="w-3.5 h-3.5 text-cyan-500" />
+              MCP Hub (5 Repos)
+            </button>
+
+            <button
               onClick={() => setActiveTab('conversion')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                 activeTab === 'conversion'
@@ -132,6 +145,9 @@ export const App: React.FC = () => {
 
         {/* View: Outcome Verification (Doneproof) */}
         {activeTab === 'diamond' && <DoneproofDiamond />}
+
+        {/* View: TrueForge MCP & API Connector Hub */}
+        {activeTab === 'connectors' && <ConnectorHub />}
 
         {/* View 1: Conversion Studio */}
         {activeTab === 'conversion' && <ConversionStudio />}
