@@ -49,124 +49,51 @@ export const App: React.FC = () => {
       <Navbar currentTab={activeTab} onSelectTab={setActiveTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 pt-32 pb-24 px-4 sm:px-6 max-w-[1400px] mx-auto w-full">
-        {/* Navigation Selector Bar */}
-        <div className="mb-8 flex items-center justify-between bg-white border border-gray-200 rounded-2xl p-2 shadow-sm flex-wrap gap-2">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'overview'
-                  ? 'bg-slate-900 text-white shadow'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              Platform Overview
-            </button>
+      <main className="flex-1 pt-28 pb-24 px-4 sm:px-6 max-w-[1400px] mx-auto w-full">
+        {/* Workspace Context Strip (Non-intrusive, clean breadcrumb) */}
+        {activeTab !== 'overview' && (
+          <div className="mb-6 flex items-center justify-between text-xs text-slate-500 font-mono border-b border-slate-200/70 pb-3">
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setActiveTab('overview')} 
+                className="hover:text-cyan-700 font-bold text-slate-700 flex items-center gap-1.5 transition-colors"
+              >
+                <span>Console</span>
+              </button>
+              <span className="text-slate-300">/</span>
+              <span className="text-slate-900 font-bold capitalize">
+                {activeTab === 'diamond' 
+                  ? 'Doneproof Oracle (Acceptance Protocol)' 
+                  : activeTab === 'connectors' 
+                  ? 'TrueForge MCP & Railway Connector Hub' 
+                  : activeTab === 'closeout'
+                  ? 'Closeout & Invoice-Support Desk'
+                  : activeTab === 'exceptions'
+                  ? 'Industrial Exception Resolution Desk'
+                  : activeTab === 'outreach'
+                  ? 'Field Outreach Engine'
+                  : activeTab === 'labor'
+                  ? 'Ark Labor Cloud'
+                  : activeTab === 'conversion'
+                  ? 'Conversion Studio'
+                  : activeTab === 'agentready'
+                  ? 'AgentReady Governance Suite'
+                  : activeTab}
+              </span>
+            </div>
 
-            <button
-              onClick={() => setActiveTab('closeout')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'closeout'
-                  ? 'bg-blue-600 text-white shadow ring-2 ring-blue-300'
-                  : 'text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200'
-              }`}
-            >
-              <FileCheck className="w-3.5 h-3.5 text-cyan-500" />
-              Closeout Desk
-            </button>
-
-            <button
-              onClick={() => setActiveTab('exceptions')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'exceptions'
-                  ? 'bg-purple-700 text-white shadow ring-2 ring-purple-300'
-                  : 'text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200'
-              }`}
-            >
-              <Wrench className="w-3.5 h-3.5 text-purple-600" />
-              Exception Desk
-            </button>
-
-            <button
-              onClick={() => setActiveTab('outreach')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'outreach'
-                  ? 'bg-emerald-700 text-white shadow ring-2 ring-emerald-300'
-                  : 'text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200'
-              }`}
-            >
-              <Target className="w-3.5 h-3.5 text-emerald-600" />
-              Field Outreach
-            </button>
-
-            <button
-              onClick={() => setActiveTab('diamond')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'diamond'
-                  ? 'bg-cyan-700 text-white shadow ring-2 ring-cyan-200'
-                  : 'text-cyan-900 bg-cyan-50/70 hover:bg-cyan-100 border border-cyan-200'
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
-              Doneproof Oracle
-            </button>
-
-            <button
-              onClick={() => setActiveTab('connectors')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'connectors'
-                  ? 'bg-cyan-800 text-white shadow ring-2 ring-cyan-300'
-                  : 'text-slate-700 hover:text-cyan-700 hover:bg-cyan-50/60'
-              }`}
-            >
-              <Terminal className="w-3.5 h-3.5 text-cyan-500" />
-              MCP Hub (5 Repos)
-            </button>
-
-            <button
-              onClick={() => setActiveTab('conversion')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'conversion'
-                  ? 'bg-blue-600 text-white shadow'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-              }`}
-            >
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
-              Conversion Studio
-            </button>
-
-            <button
-              onClick={() => setActiveTab('labor')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'labor'
-                  ? 'bg-slate-900 text-white shadow'
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-              Ark Labor Cloud
-            </button>
-
-            <button
-              onClick={() => setActiveTab('agentready')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'agentready'
-                  ? 'bg-emerald-700 text-white shadow'
-                  : 'text-gray-700 hover:text-emerald-700 hover:bg-emerald-50'
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              Governance Suite
-            </button>
+            <div className="hidden sm:flex items-center gap-3 text-[11px]">
+              <span className="flex items-center gap-1.5 text-slate-500">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Runtime: <strong>Gemini 3.8 Flash</strong>
+              </span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-500">
+                Protocol: <strong className="text-cyan-700 font-semibold">ProofAI Cryptographic Custody</strong>
+              </span>
+            </div>
           </div>
-
-          <div className="hidden md:flex items-center gap-2 text-xs font-mono text-gray-500 pr-2">
-            <span className="text-cyan-700 font-bold">ProofAI Verified Protocol</span>
-            <span>•</span>
-            <span>Runtime: <strong>Gemini 3.8 Flash</strong></span>
-          </div>
-        </div>
+        )}
 
         {/* View: Closeout Workspace */}
         {activeTab === 'closeout' && <CloseoutWorkspace />}
