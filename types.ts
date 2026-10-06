@@ -304,11 +304,11 @@ export interface MCPToolDefinition {
 export interface MCPServiceConnector {
   id: string;
   name: string;
-  slug: 'susie' | 'ark-labor' | 'proofai' | 'agentready' | 'sentinel';
+  slug: 'susie' | 'ark-labor' | 'proofai' | 'agentready' | 'sentinel' | 'trueforge';
   repoUrl: string;
   version: string;
   status: 'ONLINE' | 'ACTIVE_MESH' | 'STANDBY';
-  protocol: 'Model Context Protocol 1.0 (JSON-RPC)' | 'REST OpenAPI 3.1';
+  protocol: 'Model Context Protocol 1.0 (JSON-RPC)' | 'REST OpenAPI 3.1' | 'HTTP API / Model Context Protocol (MCP)';
   role: string;
   description: string;
   endpoint: string;

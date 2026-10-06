@@ -32,8 +32,52 @@ import {
 import { MCPServiceConnector, MCPToolDefinition, MCPOperationLog } from '../types';
 import { geminiService } from '../services/geminiService';
 
-// Connected External Repositories (MetalMindTech Ecosystem)
+// Connected External Repositories (MetalMindTech & TrueFoundry Ecosystem)
 const EXTERNAL_CONNECTORS: MCPServiceConnector[] = [
+  {
+    id: 'conn-trueforge-runtime',
+    name: 'TrueForge Agent Harness',
+    slug: 'trueforge',
+    repoUrl: 'https://github.com/truefoundry/trueforge',
+    version: 'v0.1.0',
+    status: 'ONLINE',
+    protocol: 'HTTP API / Model Context Protocol (MCP)',
+    role: 'Agent Execution Loop, Tool Harness & Session State Persistence',
+    description: 'The open-source agent harness from TrueFoundry (truefoundry/trueforge) - the runtime layer that turns an LLM into a working agent with streaming, MCP tools, sandboxing, session persistence, and approvals.',
+    endpoint: 'https://trueforge-production-7289.up.railway.app',
+    healthMetrics: {
+      uptime: 100.0,
+      latencyMs: 32,
+      callsToday: 4120,
+      successRate: 99.9
+    },
+    tools: [
+      {
+        name: 'trueforge_execute_agent_loop',
+        description: 'Runs an autonomous agent loop with streaming context, tool calls, human checkpoints, and state persistence.',
+        parameters: {
+          session_id: { type: 'string', description: 'Unique agent execution session ID' },
+          agent_prompt: { type: 'string', description: 'Objective or task instruction' },
+          mcp_servers: { type: 'array', description: 'Connected MCP servers (Susie, Ark Labor, ProofAI)' }
+        },
+        returns: 'AgentExecutionStream',
+        samplePayload: {
+          session_id: 'tf_sess_98241',
+          agent_prompt: 'Orchestrate closeout audit for WO-8942-MN and verify photo evidence Merkle root',
+          mcp_servers: ['susie', 'ark-labor', 'proofai']
+        }
+      },
+      {
+        name: 'trueforge_stream_session',
+        description: 'Subscribes to live SSE stream for session updates, subagent actions, and tool approvals.',
+        parameters: {
+          session_id: { type: 'string', description: 'Active TrueForge session ID' }
+        },
+        returns: 'SessionStreamTelemetry',
+        samplePayload: { session_id: 'tf_sess_98241' }
+      }
+    ]
+  },
   {
     id: 'conn-susie',
     name: 'Susie Signal Discovery Service',
