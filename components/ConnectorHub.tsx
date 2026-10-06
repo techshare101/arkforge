@@ -250,7 +250,7 @@ export const ConnectorHub: React.FC = () => {
   const [jsonError, setJsonError] = useState<string | null>(null);
 
   // Railway TrueForge Deployment Bridge State
-  const [railwayEndpoint, setRailwayEndpoint] = useState('https://trueforge-production.up.railway.app');
+  const [railwayEndpoint, setRailwayEndpoint] = useState('https://trueforge-production-7289.up.railway.app');
   const [railwaySecret, setRailwaySecret] = useState('tf_live_9a87f8b91c2d3e4f');
   const [railwayPingStatus, setRailwayPingStatus] = useState<'IDLE' | 'TESTING' | 'CONNECTED' | 'ERROR'>('IDLE');
   const [railwayLatency, setRailwayLatency] = useState<number | null>(null);
