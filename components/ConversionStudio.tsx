@@ -312,7 +312,7 @@ export const ConversionStudio: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 font-bold">
             01
           </div>
-          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Phase 1 · Diagnostic Entry Wedge</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Stage 01 · Diagnostic Entry Wedge</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">AgentReady Audit</h3>
           <div className="text-2xl font-black text-blue-600 mb-3">$297 – $500</div>
           <p className="text-sm text-gray-600 mb-4 leading-relaxed">
@@ -325,12 +325,12 @@ export const ConversionStudio: React.FC = () => {
 
         <div className="bg-white rounded-2xl p-6 border-2 border-blue-600 shadow-md relative overflow-hidden">
           <div className="absolute top-3 right-3 px-2 py-0.5 bg-cyan-100 text-cyan-900 text-[11px] font-black uppercase rounded-full">
-            Phase 2 Protocol
+            Core Conversion Protocol
           </div>
           <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center mb-4 font-bold">
             02
           </div>
-          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Phase 2 · Production Implementation</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Stage 02 · Production Implementation</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">AgentReady Conversion</h3>
           <div className="text-2xl font-black text-blue-600 mb-3">$2,500 – $10,000</div>
           <p className="text-sm text-gray-600 mb-4 leading-relaxed">
@@ -345,7 +345,7 @@ export const ConversionStudio: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-4 font-bold">
             03
           </div>
-          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Phase 3 · Continuous Operations & SLA</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Stage 03 · Continuous Operations & SLA</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">Agent Operations (AgentOps)</h3>
           <div className="text-2xl font-black text-emerald-600 mb-3">$299 – $1,500 <span className="text-xs text-gray-500 font-normal">/ month</span></div>
           <p className="text-sm text-gray-600 mb-4 leading-relaxed">

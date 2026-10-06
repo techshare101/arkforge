@@ -575,7 +575,7 @@ export const CloseoutWorkspace: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <span className="bg-cyan-500/20 text-cyan-300 text-[11px] font-mono font-bold px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-1.5">
                 <BadgeCheck className="w-3.5 h-3.5 text-cyan-400" />
-                PHASE 1 COMMERCIAL WEDGE · INDUSTRIAL OUTCOMES
+                COMMERCIAL REVENUE WEDGE · INDUSTRIAL OUTCOMES
               </span>
               <span className="text-xs text-slate-400 font-mono">
                 Model: Gemini 3.8 Flash · TrueForge Attestation Engine
@@ -626,7 +626,7 @@ export const CloseoutWorkspace: React.FC = () => {
           <div className="bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
             <span className="text-slate-400 block mb-1">Commercial Pilot Slots</span>
             <span className="text-2xl font-black text-emerald-400 font-mono">{completedCount} / 10 Jobs</span>
-            <span className="text-[10px] text-slate-400 block mt-1">Phase 1 validation cohort</span>
+            <span className="text-[10px] text-slate-400 block mt-1">Contractor validation cohort</span>
           </div>
 
           <div className="bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
@@ -799,7 +799,7 @@ export const CloseoutWorkspace: React.FC = () => {
                 </h3>
               </div>
               <div className="text-xs font-mono bg-blue-50 text-blue-900 px-3 py-1 rounded-xl font-bold border border-blue-200">
-                Phase 1 Intake Gateway
+                Work Order Intake Gateway
               </div>
             </div>
 

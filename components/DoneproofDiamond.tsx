@@ -731,7 +731,7 @@ export const DoneproofDiamond: React.FC = () => {
                         className="bg-slate-900 hover:bg-black text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all disabled:opacity-50"
                       >
                         {isAuditingCloseout ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-cyan-300" /> : <Sparkles className="w-3.5 h-3.5 text-cyan-300" />}
-                        {isAuditingCloseout ? 'Analyzing Rules...' : 'Run Phase 1 AI Audit'}
+                        {isAuditingCloseout ? 'Analyzing Rules...' : 'Run AI Compliance Audit'}
                       </button>
 
                       <button
@@ -746,13 +746,13 @@ export const DoneproofDiamond: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Live Phase 1 AI Compliance Evaluation Card */}
+                {/* Live AI Compliance Evaluation Card */}
                 {closeoutAuditResult && (
                   <div className="bg-slate-900 text-white p-5 rounded-2xl space-y-3 font-sans text-xs border border-slate-700 animate-fadeIn">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                       <span className="font-bold text-cyan-300 flex items-center gap-1.5 font-mono">
                         <BadgeCheck className="w-4 h-4 text-cyan-400" />
-                        PHASE 1 AI COMPLIANCE SCORE: {closeoutAuditResult.complianceScore}/100
+                        AI COMPLIANCE SCORE: {closeoutAuditResult.complianceScore}/100
                       </span>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
                         closeoutAuditResult.billingReadinessStatus === 'BILLING_READY'
@@ -799,7 +799,7 @@ export const DoneproofDiamond: React.FC = () => {
                 <div className="bg-gradient-to-r from-blue-900 to-indigo-950 text-white p-5 rounded-2xl border border-blue-700/50 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-300 font-bold">
-                      Phase 1 Commercial Offer
+                      Commercial Pilot Program
                     </span>
                     <h5 className="font-bold text-sm text-white mt-0.5">10-Job Contractor Pilot Program</h5>
                     <p className="text-[11px] text-blue-200 mt-0.5">

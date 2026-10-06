@@ -283,7 +283,7 @@ export const ExceptionDesk: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <span className="bg-purple-500/20 text-purple-300 text-[11px] font-mono font-bold px-3 py-1 rounded-full border border-purple-500/30 flex items-center gap-1.5">
                 <Wrench className="w-3.5 h-3.5 text-purple-400" />
-                PHASE 2 REVENUE ENGINE · AUTOMATION MAINTENANCE DESK
+                OPERATIONAL REVENUE ENGINE · AUTOMATION MAINTENANCE DESK
               </span>
               <span className="text-xs text-slate-400 font-mono">
                 Model: Gemini 3.8 Flash · Self-Healing Pipeline

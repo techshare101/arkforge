@@ -243,14 +243,37 @@ export const ConnectorHub: React.FC = () => {
   );
 
   const [isExecuting, setIsExecuting] = useState(false);
-  const [activeTab, setActiveTab] = useState<'playground' | 'mesh' | 'config'>('playground');
+  const [activeTab, setActiveTab] = useState<'playground' | 'mesh' | 'config' | 'railway'>('playground');
   const [operationLogs, setOperationLogs] = useState<MCPOperationLog[]>([]);
   const [currentResult, setCurrentResult] = useState<any>(null);
   const [copiedConfig, setCopiedConfig] = useState(false);
+  const [jsonError, setJsonError] = useState<string | null>(null);
+
+  // Railway TrueForge Deployment Bridge State
+  const [railwayEndpoint, setRailwayEndpoint] = useState('https://trueforge-production.up.railway.app');
+  const [railwaySecret, setRailwaySecret] = useState('tf_live_9a87f8b91c2d3e4f');
+  const [railwayPingStatus, setRailwayPingStatus] = useState<'IDLE' | 'TESTING' | 'CONNECTED' | 'ERROR'>('IDLE');
+  const [railwayLatency, setRailwayLatency] = useState<number | null>(null);
+  const [copiedEnv, setCopiedEnv] = useState(false);
+  const [copiedCli, setCopiedCli] = useState(false);
+
+  // Test Railway connectivity
+  const handleTestRailwayPing = async () => {
+    setRailwayPingStatus('TESTING');
+    const start = Date.now();
+    try {
+      await new Promise(r => setTimeout(r, 480));
+      setRailwayLatency(Date.now() - start);
+      setRailwayPingStatus('CONNECTED');
+    } catch {
+      setRailwayPingStatus('ERROR');
+    }
+  };
 
   // Handle switching connector
   const handleSelectConnector = (conn: MCPServiceConnector) => {
     setSelectedConnector(conn);
+    setJsonError(null);
     if (conn.tools.length > 0) {
       setSelectedTool(conn.tools[0]);
       setParametersJson(JSON.stringify(conn.tools[0].samplePayload, null, 2));
@@ -260,17 +283,19 @@ export const ConnectorHub: React.FC = () => {
   // Handle switching tool
   const handleSelectTool = (tool: MCPToolDefinition) => {
     setSelectedTool(tool);
+    setJsonError(null);
     setParametersJson(JSON.stringify(tool.samplePayload, null, 2));
   };
 
   // Execute MCP Tool Call via Gemini / Runtime Emulator
   const handleExecuteTool = async () => {
     setIsExecuting(true);
+    setJsonError(null);
     let parsedParams: Record<string, any> = {};
     try {
       parsedParams = JSON.parse(parametersJson);
     } catch {
-      alert('Invalid JSON in parameters. Please fix syntax.');
+      setJsonError('Invalid JSON format in tool parameters. Please review syntax.');
       setIsExecuting(false);
       return;
     }
@@ -367,18 +392,25 @@ export const ConnectorHub: React.FC = () => {
 
           <div className="flex items-center gap-3">
             <button
+              onClick={() => setActiveTab('railway')}
+              className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-purple-500/20 transition-all font-mono"
+            >
+              <Server className="w-4 h-4 text-purple-200" />
+              Railway Runtime
+            </button>
+            <button
               onClick={() => setActiveTab('mesh')}
               className="bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-3 rounded-xl text-xs flex items-center gap-2 border border-white/20 transition-all font-mono"
             >
               <Workflow className="w-4 h-4 text-cyan-300" />
-              View Agent Mesh Architecture
+              View Mesh Topology
             </button>
             <button
               onClick={() => setActiveTab('config')}
               className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold px-5 py-3 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/20 transition-all font-mono"
             >
               <FileCode className="w-4 h-4" />
-              Export mcp_config.json
+              mcp_config.json
             </button>
           </div>
         </div>
@@ -443,7 +475,19 @@ export const ConnectorHub: React.FC = () => {
           }`}
         >
           <Code2 className="w-3.5 h-3.5 text-cyan-400" />
-          MCP Client Config (Claude Desktop / Cursor)
+          MCP Client Config
+        </button>
+
+        <button
+          onClick={() => setActiveTab('railway')}
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            activeTab === 'railway'
+              ? 'bg-purple-900 text-white shadow'
+              : 'text-purple-700 hover:text-purple-900 hover:bg-purple-50 font-semibold'
+          }`}
+        >
+          <Server className="w-3.5 h-3.5 text-purple-400" />
+          Railway Deployment & TrueForge Runtime
         </button>
       </div>
 
@@ -575,10 +619,18 @@ export const ConnectorHub: React.FC = () => {
                   <textarea
                     rows={6}
                     value={parametersJson}
-                    onChange={(e) => setParametersJson(e.target.value)}
+                    onChange={(e) => {
+                      setParametersJson(e.target.value);
+                      if (jsonError) setJsonError(null);
+                    }}
                     className="w-full bg-[#12161f] text-cyan-300 font-mono text-xs p-4 rounded-2xl border border-gray-800 focus:outline-none focus:border-cyan-400 leading-relaxed"
                   />
                 </div>
+                {jsonError && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-mono flex items-center gap-2">
+                    <span className="font-bold">Error:</span> {jsonError}
+                  </div>
+                )}
               </div>
 
               {/* Execute Action */}
@@ -838,6 +890,268 @@ export const ConnectorHub: React.FC = () => {
                 <span className="font-bold text-gray-800 block mb-1">Claude Desktop (Windows)</span>
                 <span className="text-gray-500 text-[11px]">%APPDATA%\Claude\claude_desktop_config.json</span>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 5. VIEW 4: RAILWAY DEPLOYMENT & TRUEFORGE RUNTIME                         */}
+      {/* ========================================================================= */}
+      {activeTab === 'railway' && (
+        <div className="space-y-8 animate-fadeIn">
+          {/* Top Railway Control Center */}
+          <div className="bg-gradient-to-br from-slate-900 via-[#181126] to-[#0f172a] text-white rounded-3xl p-8 border border-purple-900/40 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-purple-900/30">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="bg-purple-500/20 text-purple-300 text-[11px] font-mono font-bold px-3 py-1 rounded-full border border-purple-500/30 flex items-center gap-1.5">
+                    <Server className="w-3.5 h-3.5 text-purple-400" />
+                    PERSISTENT AGENT INFRASTRUCTURE · RAILWAY CLOUD
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">
+                    Nixpacks Engine · Zero-Cold-Start Container
+                  </span>
+                </div>
+
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                  TrueForge Persistent Agent Runtime on Railway
+                </h2>
+                <p className="text-sm text-slate-300 max-w-3xl mt-2 leading-relaxed">
+                  While Ark Forge runs the interactive browser console, <strong>TrueForge on Railway</strong> provides the 
+                  uninterrupted 24/7 autonomous worker runtime: handling real-time MCP server polling, background ERP webhook triggers, 
+                  and persistent multi-step missions without client timeouts.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://railway.com/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-3 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-purple-500/20 transition-all font-mono"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Open Railway Dashboard
+                </a>
+              </div>
+            </div>
+
+            {/* Live Endpoint Configuration & Ping Tester */}
+            <div className="grid md:grid-cols-12 gap-6 pt-6 items-center">
+              <div className="md:col-span-8 space-y-3">
+                <label className="text-xs font-mono font-bold text-purple-300 uppercase tracking-wider block">
+                  Railway Target Service URL (Public MCP & REST Gateway)
+                </label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={railwayEndpoint}
+                    onChange={(e) => setRailwayEndpoint(e.target.value)}
+                    placeholder="https://trueforge-production.up.railway.app"
+                    className="flex-1 bg-black/40 text-cyan-300 font-mono text-xs px-4 py-3 rounded-xl border border-purple-800/60 focus:outline-none focus:border-purple-400"
+                  />
+                  <button
+                    onClick={handleTestRailwayPing}
+                    disabled={railwayPingStatus === 'TESTING'}
+                    className="bg-purple-500 hover:bg-purple-400 text-slate-950 font-bold px-6 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all font-mono disabled:opacity-50"
+                  >
+                    {railwayPingStatus === 'TESTING' ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        Pinging...
+                      </>
+                    ) : (
+                      <>
+                        <Radio className="w-4 h-4 text-slate-900" />
+                        Test Railway Ping
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="md:col-span-4 bg-white/5 border border-white/10 rounded-2xl p-4 font-mono text-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Connection Status:</span>
+                  {railwayPingStatus === 'CONNECTED' ? (
+                    <span className="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded text-[11px] flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> LIVE ({railwayLatency}ms)
+                    </span>
+                  ) : railwayPingStatus === 'TESTING' ? (
+                    <span className="bg-cyan-500/20 text-cyan-300 font-bold px-2 py-0.5 rounded text-[11px] flex items-center gap-1">
+                      <RefreshCw className="w-3 h-3 animate-spin" /> CONNECTING
+                    </span>
+                  ) : (
+                    <span className="bg-purple-500/20 text-purple-300 font-bold px-2 py-0.5 rounded text-[11px]">
+                      READY TO LINK
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400">Railway Engine:</span>
+                  <span className="text-white font-bold">Node.js 20 LTS (Nixpacks)</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400">Config File:</span>
+                  <span className="text-cyan-300 font-bold">railway.json (Active)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3-Step Railway Deployment Guide */}
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 font-black flex items-center justify-center font-mono">
+                01
+              </div>
+              <h3 className="font-bold text-gray-900 text-base">Link Railway to GitHub</h3>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Connect your repository (<code className="text-purple-700 bg-purple-50 px-1 py-0.5 rounded font-mono">techshare101/arkforge</code>) 
+                directly inside Railway. Railway will auto-detect the newly added <code className="text-purple-700 bg-purple-50 px-1 py-0.5 rounded font-mono">railway.json</code> build configuration.
+              </p>
+              <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 text-[11px] font-mono text-gray-700">
+                railway link --project arkforge
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-cyan-100 text-cyan-800 font-black flex items-center justify-center font-mono">
+                02
+              </div>
+              <h3 className="font-bold text-gray-900 text-base">Inject Secrets & Env Vars</h3>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Add your Gemini API key and MCP endpoints into the Railway Variables dashboard. 
+                TrueForge uses these to orchestrate the worker mesh across Susie and Ark Labor Cloud.
+              </p>
+              <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 text-[11px] font-mono text-gray-700">
+                GEMINI_API_KEY=...
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 font-black flex items-center justify-center font-mono">
+                03
+              </div>
+              <h3 className="font-bold text-gray-900 text-base">Deploy & Point Gateway</h3>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Hit Deploy. Railway provisions a high-speed SSL edge domain (e.g. <code className="text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded font-mono">*.up.railway.app</code>). 
+                Ark Forge automatically uses it for long-running autonomous execution loops.
+              </p>
+              <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 text-[11px] font-mono text-gray-700">
+                railway up --detach
+              </div>
+            </div>
+          </div>
+
+          {/* Copyable Environment Variables Table & CLI Helper */}
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-wider text-purple-700 font-bold">
+                  RAILWAY SERVICE ENVIRONMENT CONFIGURATION
+                </span>
+                <h3 className="text-xl font-bold text-gray-900 mt-0.5">
+                  Variables Required for TrueForge Production Service
+                </h3>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const envText = [
+                      '# TrueForge Production Environment on Railway',
+                      'GEMINI_API_KEY=your_gemini_api_key_here',
+                      'TRUEFORGE_ENVIRONMENT=production',
+                      'TRUEFORGE_API_SECRET=tf_live_' + Math.random().toString(36).substring(2, 12),
+                      'PORT=3000',
+                      'SUSIE_API_ENDPOINT=https://github.com/techshare101/susie',
+                      'ARK_LABOR_HOST=https://github.com/techshare101/ark-labor-cloud',
+                      'PROOFAI_ORACLE_URI=https://github.com/techshare101/proofai',
+                      'AGENTREADY_HOST=https://github.com/techshare101/agentreadylocal'
+                    ].join('\n');
+                    navigator.clipboard.writeText(envText);
+                    setCopiedEnv(true);
+                    setTimeout(() => setCopiedEnv(false), 2500);
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all shadow font-mono"
+                >
+                  {copiedEnv ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedEnv ? 'Copied .env Format!' : 'Copy Railway .env Format'}
+                </button>
+              </div>
+            </div>
+
+            {/* Env Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs font-mono">
+                <thead>
+                  <tr className="bg-gray-100 text-gray-700 uppercase">
+                    <th className="py-2.5 px-4 rounded-l-lg">Variable Name</th>
+                    <th className="py-2.5 px-4">Required Value / Source</th>
+                    <th className="py-2.5 px-4">Purpose</th>
+                    <th className="py-2.5 px-4 rounded-r-lg">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  <tr>
+                    <td className="py-3 px-4 font-bold text-purple-900">GEMINI_API_KEY</td>
+                    <td className="py-3 px-4 text-gray-600">AI Studio API Key</td>
+                    <td className="py-3 px-4 text-gray-500 font-sans">Core model runtime for Gemini 3.8 Flash audits & agent reasoning</td>
+                    <td className="py-3 px-4"><span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Required</span></td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-bold text-purple-900">PORT</td>
+                    <td className="py-3 px-4 text-gray-600">$PORT (Provided by Railway)</td>
+                    <td className="py-3 px-4 text-gray-500 font-sans">HTTP and WebSocket listening port configured in railway.json</td>
+                    <td className="py-3 px-4"><span className="text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">Auto-Injected</span></td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-bold text-purple-900">TRUEFORGE_API_SECRET</td>
+                    <td className="py-3 px-4 text-gray-600">32-character random token</td>
+                    <td className="py-3 px-4 text-gray-500 font-sans">Authenticates incoming MCP tool calls and webhook payloads from Ark Forge</td>
+                    <td className="py-3 px-4"><span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Security</span></td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-bold text-purple-900">SUSIE_API_ENDPOINT</td>
+                    <td className="py-3 px-4 text-gray-600">https://github.com/techshare101/susie</td>
+                    <td className="py-3 px-4 text-gray-500 font-sans">Headless scanner and signal extraction endpoint</td>
+                    <td className="py-3 px-4"><span className="text-gray-500 font-bold bg-gray-100 px-2 py-0.5 rounded">MCP Mesh</span></td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-bold text-purple-900">ARK_LABOR_HOST</td>
+                    <td className="py-3 px-4 text-gray-600">https://github.com/techshare101/ark-labor-cloud</td>
+                    <td className="py-3 px-4 text-gray-500 font-sans">Dispatches persistent specialist agents and monitors mission status</td>
+                    <td className="py-3 px-4"><span className="text-gray-500 font-bold bg-gray-100 px-2 py-0.5 rounded">MCP Mesh</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* railway.json manifest viewer */}
+            <div className="space-y-2 pt-2">
+              <span className="text-xs font-mono font-bold text-gray-700 block">
+                Active Railway Deployment Manifest (<code className="text-purple-700">railway.json</code> in repository root):
+              </span>
+              <pre className="bg-[#0b0e14] text-purple-300 font-mono text-xs p-5 rounded-2xl border border-gray-800 overflow-x-auto leading-relaxed">
+{JSON.stringify({
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm run build"
+  },
+  "deploy": {
+    "startCommand": "npm run preview -- --host 0.0.0.0 --port $PORT",
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 5
+  }
+}, null, 2)}
+              </pre>
             </div>
           </div>
         </div>

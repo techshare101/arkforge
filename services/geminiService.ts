@@ -390,7 +390,7 @@ Verify if the evidence is complete, confirm the before/after work, confirm check
   }
 
   /**
-   * 5. PHASE 1: CLOSEOUT & INVOICE-SUPPORT COMPLIANCE AUDIT
+   * 5. CLOSEOUT & INVOICE-SUPPORT COMPLIANCE AUDIT
    * Evaluates contractor field notes, photos, and PO against client acceptance requirements.
    */
   async auditCloseoutJob(job: {
@@ -667,7 +667,7 @@ Respond ONLY with a valid JSON object representing the tool execution result.`;
   }
 
   /**
-   * 8. PHASE 2: INDUSTRIAL EXCEPTION DESK INVESTIGATION
+   * 8. INDUSTRIAL EXCEPTION DESK INVESTIGATION
    * Investigates operational pipeline failures (ERP -> Work Order -> Photos -> Accounting -> Approval).
    */
   async investigatePipelineException(incident: {

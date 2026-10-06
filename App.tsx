@@ -73,7 +73,7 @@ export const App: React.FC = () => {
               }`}
             >
               <FileCheck className="w-3.5 h-3.5 text-cyan-500" />
-              Phase 1: Closeout Desk
+              Closeout Desk
             </button>
 
             <button
@@ -85,7 +85,7 @@ export const App: React.FC = () => {
               }`}
             >
               <Wrench className="w-3.5 h-3.5 text-purple-600" />
-              Phase 2: Exception Desk
+              Exception Desk
             </button>
 
             <button
@@ -97,7 +97,7 @@ export const App: React.FC = () => {
               }`}
             >
               <Target className="w-3.5 h-3.5 text-emerald-600" />
-              48-Hour Wave
+              Field Outreach
             </button>
 
             <button
@@ -133,7 +133,7 @@ export const App: React.FC = () => {
               }`}
             >
               <Zap className="w-3.5 h-3.5 text-cyan-400" />
-              1 · Conversion Studio
+              Conversion Studio
             </button>
 
             <button
@@ -145,7 +145,7 @@ export const App: React.FC = () => {
               }`}
             >
               <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-              2 · Ark Labor Cloud
+              Ark Labor Cloud
             </button>
 
             <button
@@ -157,7 +157,7 @@ export const App: React.FC = () => {
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              3 · AgentReady Governance
+              Governance Suite
             </button>
           </div>
 
@@ -168,10 +168,10 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* View: Phase 1 Closeout Workspace */}
+        {/* View: Closeout Workspace */}
         {activeTab === 'closeout' && <CloseoutWorkspace />}
 
-        {/* View: Phase 2 Exception Resolution Desk */}
+        {/* View: Exception Resolution Desk */}
         {activeTab === 'exceptions' && <ExceptionDesk />}
 
         {/* View: 48-Hour Commercial Outreach & Pilot Engine */}
@@ -221,7 +221,7 @@ export const App: React.FC = () => {
                       className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
                     >
                       <FileCheck className="w-4 h-4 text-cyan-200" />
-                      Phase 1: Closeout Desk ($750 Pilot)
+                      Closeout & Invoice Desk ($750 Pilot)
                     </button>
                     <button
                       onClick={() => setActiveTab('diamond')}

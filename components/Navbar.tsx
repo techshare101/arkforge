@@ -21,8 +21,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
     <>
       {/* Top Industrial Mission Signal Bar */}
       <div className="bg-[#0f131a] text-white py-2 px-6 text-center text-xs font-medium relative z-[60] border-b border-gray-800">
-        <span className="text-cyan-300 font-bold mr-1">Phase 1 Commercial Wedge:</span>
-        AI Closeout & Invoice-Support Service active — 10 Jobs @ $750 Pilot. 0% AP invoice rejections.
+        <span className="text-cyan-300 font-bold mr-1">Enterprise Agent Infrastructure:</span>
+        Automated Closeout, Multimodal Evidence Verification, and Self-Healing Pipeline Execution.
         <button 
           onClick={() => onSelectTab('closeout')}
           className="underline ml-2 hover:text-cyan-300 font-bold font-mono"
@@ -71,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <FileCheck className="w-3.5 h-3.5 text-cyan-500" />
-                Phase 1: Closeout
+                Closeout Desk
               </button>
 
               <button
@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <Wrench className="w-3.5 h-3.5 text-purple-600" />
-                Phase 2: Exceptions
+                Exception Desk
               </button>
 
               <button
@@ -95,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <Target className="w-3.5 h-3.5 text-emerald-600" />
-                48-Hour Wave
+                Field Outreach
               </button>
 
               <button
@@ -131,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-                1. Studio
+                Conversion Studio
               </button>
 
               <button
@@ -143,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-                2. Ark Labor
+                Ark Labor
               </button>
 
               <button
@@ -155,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
                 }`}
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                3. Governance
+                Governance
               </button>
             </div>
           </div>
